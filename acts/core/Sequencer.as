@@ -22,13 +22,10 @@ Contributor(s) :
 */
 package acts.core
 {
-	import acts.display.ASFinder;
 	import acts.display.IFinder;
 	import acts.events.StateEvent;
 	import acts.factories.Factory;
-	import acts.display.IViewContext;
 	
-	import flash.events.Event;
 	import flash.events.EventDispatcher;
 
 	[Event(name="finished",type="acts.events.StateEvent")]
@@ -36,9 +33,15 @@ package acts.core
 	{
 		private var _initialState:State;
 		private var _currentState:State;
+		
+		private var _lastState:State;
 
 		private var _finder:IFinder;
 		private var _factory:Factory;
+		
+		public function get lastState():State {
+			return _lastState;
+		}
 
 		public function get factory():Factory
 		{
@@ -124,6 +127,7 @@ package acts.core
 				currentState.exit.dispatch(this);
 			}
 			
+			_lastState = _currentState;
 			_currentState = newState;
 			
 			// Managing the transitions of currentState
