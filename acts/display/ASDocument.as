@@ -36,6 +36,10 @@ package acts.display
 		
 		private var displayObject:DisplayObject;
 		
+		public function get rootDocument():DisplayObject {
+			return displayObject;
+		}
+		
 		public function ASDocument(displayObject:DisplayObject)
 		{
 			typedElements = new Dictionary();

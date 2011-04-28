@@ -1,0 +1,93 @@
+/*
+
+The contents of this file are subject to the Mozilla Public License Version
+1.1 (the "License"); you may not use this file except in compliance with
+the License. You may obtain a copy of the License at 
+
+http://www.mozilla.org/MPL/ 
+
+Software distributed under the License is distributed on an "AS IS" basis,
+WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+for the specific language governing rights and limitations under the License. 
+
+The Original Code is Acts (Actionscript Activity).
+
+The Initial Developer of the Original Code is
+Olivier Bugalotto (aka Iteratif) <olivier.bugalotto@iteratif.net>.
+Portions created by the Initial Developer are Copyright (C) 2008-2011
+the Initial Developer. All Rights Reserved.
+
+Contributor(s) :
+
+*/
+package acts.system
+{
+	import acts.display.ASDocument;
+	import acts.display.ASFinder;
+	import acts.display.IFinder;
+	import acts.factories.Factory;
+	import acts.factories.ObjectFactory;
+	import acts.factories.registry.Registry;
+	
+	import flash.display.DisplayObject;
+	import flash.events.Event;
+	import flash.events.EventDispatcher;
+	
+	import mx.core.IMXMLObject;
+	import mx.events.FlexEvent;
+	
+	[DefaultProperty("events")]
+	public class System extends ASSystem implements IMXMLObject
+	{	
+		public var objects:Array;
+		
+		private static var mainSystem:System;
+		
+		public function initialized(document:Object, id:String):void
+		{
+			if(!mainSystem) {
+				mainSystem = this;
+				document.addEventListener(FlexEvent.PREINITIALIZE,preInitializeHandler);
+			}
+			document.addEventListener(FlexEvent.INITIALIZE,initializeHandler);		
+		}
+		
+		private function preInitializeHandler(e:flash.events.Event):void {
+			var document:Object = e.target;
+			document.removeEventListener(FlexEvent.PREINITIALIZE,preInitializeHandler);
+		
+			var dom:ASDocument = new ASDocument(e.target as DisplayObject);
+			_finder = new ASFinder(dom);
+			
+			_factory = new ObjectFactory(new Registry());
+		}
+
+		private function initializeHandler(e:flash.events.Event):void {
+			var document:Object = e.target;
+			document.removeEventListener(FlexEvent.INITIALIZE,initializeHandler);			
+			
+			var i:int, len:int;
+			if(events) {
+				len = events.length;
+				var h:acts.system.Event;
+				for(i = 0; i < len; i++) {
+					h = events[i];
+					if(!h.trigger) {
+						var f:Function = createDelegate(h.source,h.method,h.parameters);
+						f();
+						continue;
+					}
+					
+					mainSystem.addEvent(h.type,h.trigger,h.source,h.method,h.parameters);
+				}
+			}
+			
+			if(objects != null) {
+				len = objects.length;
+				for(i = 0; i < len; i++) {
+					mainSystem.factory.registry.addDefinition(objects[i]);
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<componentPackage>
+	<!-- acts.system -->
+	<component id="System" class="acts.system.System" />
+	<component id="Event" class="acts.system.Event"/>
+	<component id="Parameter" class="acts.system.Parameter"/>
+	
+	<!-- acts.factories.registry -->
+	<component id="Definition" class="acts.factories.registry.Definition"/>
+	
+</componentPackage>

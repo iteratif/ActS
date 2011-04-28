@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<design>
+	<namespaces>
+     <namespace prefix="acts" uri="http://www.iteratif.fr/acts"/>
+   </namespaces>
+</design>

@@ -27,9 +27,13 @@ package acts.display
 	import flash.events.Event;
 	import flash.utils.getQualifiedClassName;
 
-	public class ASFinder
+	public class ASFinder implements IFinder
 	{
 		private var dom:ASDocument;
+		
+		public function get document():ASDocument {
+			return dom;
+		}
 	
 		public function ASFinder(dom:ASDocument)
 		{
