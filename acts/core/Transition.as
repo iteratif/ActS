@@ -52,10 +52,11 @@ package acts.core
 			action = new Action(source,methodName);
 		}
 		
-		public function connect():void {
+		public function activate():void {
+			trace("activate");
 			var trigger:Object = source;
 			if(trigger is String) {
-				trigger = state.sequencer.finder.getElement(source.toString());
+				trigger = state.sequencer.finder.getElement(trigger.toString());
 			}
 			
 			if(trigger != null) {

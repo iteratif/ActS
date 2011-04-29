@@ -27,6 +27,8 @@ package acts.core
 	import acts.factories.Factory;
 	
 	import flash.events.EventDispatcher;
+	import flash.events.TimerEvent;
+	import flash.utils.Timer;
 
 	[Event(name="finished",type="acts.events.StateEvent")]
 	public class Sequencer extends EventDispatcher implements IContext
@@ -115,7 +117,9 @@ package acts.core
 				throw new ArgumentError("no initialAction set");
 			}
 			
-			currentState = initialState;
+			var timer:Timer = new Timer(50,1);
+			timer.addEventListener(TimerEvent.TIMER_COMPLETE,nextFrameHandler);
+			timer.start();
 		}
 		
 		public function initialize():void {
@@ -125,19 +129,11 @@ package acts.core
 		public function setCurrentState(newState:State):void {
 			if(currentState) {
 				currentState.exit.dispatch(this);
-			}
+				currentState.destroy();
+			}	
 			
-			_lastState = _currentState;
+			_lastState = currentState;
 			_currentState = newState;
-			
-			// Managing the transitions of currentState
-			var transitions:Array = currentState.transitions;
-			var t:Transition;
-			var len:int = transitions.length;
-			for(var i:int = 0; i < len; i++) {
-				t = transitions[i];
-				t.connect();
-			}
 			
 			currentState.entry.dispatch(this);
 			
@@ -146,6 +142,10 @@ package acts.core
 			if(currentState is FinalState) {
 				dispatchEvent(new StateEvent(StateEvent.FINISHED));
 			}
+		}
+		
+		private function nextFrameHandler(e:TimerEvent):void {
+			currentState = initialState;
 		}
 	}
 }

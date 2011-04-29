@@ -28,9 +28,11 @@ package acts.core
 	
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
+	import flash.events.IEventDispatcher;
 	import flash.utils.Dictionary;
 	
 	import org.osflash.signals.Signal;
+	import org.osflash.signals.natives.NativeMappedSignal;
 
 	[Event(name="entry",type="acts.events.StateEvent")]
 	[Event(name="exit",type="acts.events.StateEvent")]
@@ -108,11 +110,11 @@ package acts.core
 			return t;
 		}
 		
-		// TODO managing destroy
+		private var signals:Array = [];
 		public function initialize():void {
 			var numEvents:int = events.length;
 			var e:acts.core.Event;
-			var trigger:Object;
+			var trigger:*;
 			for(var i:int = 0; i < numEvents; i++) {
 				e = events[i];
 				trigger = e.trigger;
@@ -120,17 +122,34 @@ package acts.core
 					trigger = sequencer.finder.getElement(trigger.toString());
 				}
 				
-				if(!trigger.hasEventListener(e.type)) {
-					trigger.addEventListener(e.type,createDelegate(e.action));
-				}	
+				var signal:Signal = new NativeMappedSignal(trigger,e.type,null,Action).mapTo(e.action);
+				signal.add(executeAction);
+				signals.push(signal);				
+			}
+			
+			// Managing the transitions of currentState
+			//var transitions:Array = currentState.transitions;
+			var t:Transition;
+			var len:int = transitions.length;
+			for(i = 0; i < len; i++) {
+				t = transitions[i];
+				t.activate();
 			}
 		}
 		
-		private function createDelegate(action:Action):Function {
-			var f:* = function(e:flash.events.Event):void {
-				action.execute(sequencer);
-			};
-			return f;
+		public function destroy():void {
+			var numSignals:int = signals.length;
+			var signal:Signal;
+			for(var i:int = 0; i < numSignals; i++) {
+				signal = signals[i];
+				signal.remove(executeAction);
+			} 
+			
+			signals = [];
+		}
+		
+		private function executeAction(action:Action):void {
+			action.execute(sequencer);
 		}
 	}
 }

@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<project name="ActS tools" default="acts" basedir=".">
+	<property environment="env" />
+	<fail unless="env.FLEX_HOME" message="FLEX_HOME needs to be defined as an environment variable or in the Ant build." />
+	<property name="FLEX_HOME" value="${env.FLEX_HOME}" />
+	<property name="project.name" value="ActS" />
+	<property name="output.dir" value="../bin" />
+	
+	<taskdef resource="flexTasks.tasks" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
+	
+	<target name="clean">
+		<delete dir="${output.dir}" />
+		<mkdir dir="${output.dir}"/>
+	</target>
+	
+	<target name="acts" depends="clean">
+		<compc output="${output.dir}/${project.name}.swc" incremental="true">
+			<namespace uri="http://www.iteratif.fr/acts" manifest="${basedir}/manifest.xml" />
+			<include-namespaces uri="http://www.iteratif.fr/acts" />
+			<source-path path-element="${basedir}" />
+			<external-library-path dir="${basedir}/libs">
+				<include name="as3-signals-v8.0.swc" />
+			</external-library-path>
+			<include-file name="design.xml" path="${basedir}/design.xml" />
+		</compc>
+	</target>
+</project>
