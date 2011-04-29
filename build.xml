@@ -14,12 +14,12 @@
 	</target>
 	
 	<target name="acts" depends="clean">
-		<compc output="${output.dir}/${project.name}.swc" incremental="true">
+		<compc output="${output.dir}/${project.name}.swc" fork="true">
 			<namespace uri="http://www.iteratif.fr/acts" manifest="${basedir}/manifest.xml" />
 			<include-namespaces uri="http://www.iteratif.fr/acts" />
 			<source-path path-element="${basedir}" />
-			<external-library-path dir="${basedir}/libs">
-				<include name="as3-signals-v8.0.swc" />
+			<external-library-path dir="${basedir}/libs" append="true">
+				<include name="as3-signals-v0.8.swc" />
 			</external-library-path>
 			<include-file name="design.xml" path="${basedir}/design.xml" />
 		</compc>
