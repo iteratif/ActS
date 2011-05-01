@@ -29,8 +29,12 @@ package acts.display
 	import flash.utils.Dictionary;
 	import flash.utils.getQualifiedClassName;
 	
+	import org.osflash.signals.Signal;
+	
 	public class ASDocument extends EventDispatcher
 	{
+		public var elementAdded:Signal;
+		
 		private var typedElements:Dictionary;
 		private var namedElements:Dictionary;
 		
@@ -42,6 +46,8 @@ package acts.display
 		
 		public function ASDocument(displayObject:DisplayObject)
 		{
+			elementAdded = new Signal(DisplayObject);
+			
 			typedElements = new Dictionary();
 			namedElements = new Dictionary();
 			
@@ -147,6 +153,8 @@ package acts.display
 				namedElements[elt.name] = names;
 			}
 			names.push(elt);
+			
+			elementAdded.dispatch(elt);
 		}
 		
 		protected function removedHandler(e:Event):void {

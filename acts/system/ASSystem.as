@@ -29,12 +29,10 @@ package acts.system
 	import acts.factories.Factory;
 	import acts.factories.ObjectFactory;
 	import acts.factories.registry.IRegistry;
-	import acts.factories.registry.Registry;
 	
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.system.ApplicationDomain;
-	import flash.utils.getTimer;
 
 	public class ASSystem
 	{

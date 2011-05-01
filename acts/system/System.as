@@ -24,14 +24,12 @@ package acts.system
 {
 	import acts.display.ASDocument;
 	import acts.display.ASFinder;
-	import acts.display.IFinder;
-	import acts.factories.Factory;
 	import acts.factories.ObjectFactory;
 	import acts.factories.registry.Registry;
 	
 	import flash.display.DisplayObject;
 	import flash.events.Event;
-	import flash.events.EventDispatcher;
+	import flash.utils.Dictionary;
 	
 	import mx.core.IMXMLObject;
 	import mx.events.FlexEvent;
@@ -41,29 +39,33 @@ package acts.system
 	{	
 		public var objects:Array;
 		
+		private var document:Object;
+		
 		private static var mainSystem:System;
 		
 		public function initialized(document:Object, id:String):void
 		{
+			this.document = document;
+			
 			if(!mainSystem) {
 				mainSystem = this;
 				document.addEventListener(FlexEvent.PREINITIALIZE,preInitializeHandler);
 			}
-			document.addEventListener(FlexEvent.INITIALIZE,initializeHandler);		
+			document.addEventListener(FlexEvent.INITIALIZE,initializeHandler);
+			document.addEventListener(FlexEvent.CREATION_COMPLETE,creationCompleteHandler);
 		}
 		
 		private function preInitializeHandler(e:flash.events.Event):void {
-			var document:Object = e.target;
 			document.removeEventListener(FlexEvent.PREINITIALIZE,preInitializeHandler);
 		
 			var dom:ASDocument = new ASDocument(e.target as DisplayObject);
+			dom.elementAdded.add(elementAddedHandler);
 			_finder = new ASFinder(dom);
 			
 			_factory = new ObjectFactory(new Registry());
 		}
 
-		private function initializeHandler(e:flash.events.Event):void {
-			var document:Object = e.target;
+		private function initializeHandler(e:FlexEvent):void {
 			document.removeEventListener(FlexEvent.INITIALIZE,initializeHandler);			
 			
 			var i:int, len:int;
@@ -88,6 +90,16 @@ package acts.system
 					mainSystem.factory.registry.addDefinition(objects[i]);
 				}
 			}
+		}
+		
+		private function creationCompleteHandler(e:FlexEvent):void {
+			document.removeEventListener(FlexEvent.CREATION_COMPLETE,creationCompleteHandler);
+			
+			
+		}
+		
+		private function elementAddedHandler(displayObject:DisplayObject):void {
+			
 		}
 	}
 }

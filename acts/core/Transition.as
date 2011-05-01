@@ -53,7 +53,6 @@ package acts.core
 		}
 		
 		public function activate():void {
-			trace("activate");
 			var trigger:Object = source;
 			if(trigger is String) {
 				trigger = state.sequencer.finder.getElement(trigger.toString());
