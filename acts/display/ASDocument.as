@@ -23,6 +23,7 @@ Contributor(s) :
 package acts.display
 {
 	import flash.display.DisplayObject;
+	import flash.display.DisplayObjectContainer;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
@@ -38,21 +39,22 @@ package acts.display
 		private var typedElements:Dictionary;
 		private var namedElements:Dictionary;
 		
-		private var displayObject:DisplayObject;
+		private var container:DisplayObjectContainer;
 		
-		public function get rootDocument():DisplayObject {
-			return displayObject;
+		public function get rootDocument():DisplayObjectContainer {
+			return container;
 		}
 		
-		public function ASDocument(displayObject:DisplayObject)
+		public function ASDocument(container:DisplayObjectContainer)
 		{
 			elementAdded = new Signal(DisplayObject);
+			this.container = container;
 			
 			typedElements = new Dictionary();
 			namedElements = new Dictionary();
 			
-			this.displayObject = displayObject;
-			addBehaviors(this.displayObject);
+			addBehaviors(this.container);
+			getChildren();
 		}
 		
 		public function getElementsByType(typeName:String):Array {
@@ -95,6 +97,31 @@ package acts.display
 			return count == selectors.length;
 		}
 		
+		public function getChildren():void {
+			var container:DisplayObjectContainer = container as DisplayObjectContainer;
+			
+			if(container != null) {
+				var len:int = container.numChildren;
+				for(var i:int = 0; i < len; i++) {
+					insertElement(container.getChildAt(i));
+				}
+			}
+		}
+		
+		public function unqualifiedClassName(object:Object):String {
+			var name:String;
+			if (object is String)
+				name = object as String;
+			else
+				name = getQualifiedClassName(object);
+			
+			var index:int = name.indexOf("::");
+			if (index > -1)
+				name = name.substr(index + 2);
+			
+			return name;
+		}
+		
 		protected function addBehaviors(dispatcher:DisplayObject):void {
 			if(dispatcher.stage) {
 				dispatcher.stage.addEventListener(Event.ADDED_TO_STAGE,addedToStageHandlerEx,true);
@@ -113,9 +140,9 @@ package acts.display
 		
 		protected function addedToStageHandler(e:Event):void {			
 			var elt:Object = e.target;
-			displayObject.removeEventListener(Event.ADDED,addedHandler,true);
-			displayObject.removeEventListener(Event.REMOVED,removedHandler,true);
-			displayObject.removeEventListener(Event.ADDED_TO_STAGE,addedToStageHandler);
+			container.removeEventListener(Event.ADDED,addedHandler,true);
+			container.removeEventListener(Event.REMOVED,removedHandler,true);
+			container.removeEventListener(Event.ADDED_TO_STAGE,addedToStageHandler);
 			
 			insertElement(elt);		
 			
@@ -197,18 +224,5 @@ package acts.display
 			}
 		}
 		
-		private function unqualifiedClassName(object:Object):String {
-			var name:String;
-			if (object is String)
-				name = object as String;
-			else
-				name = getQualifiedClassName(object);
-			
-			var index:int = name.indexOf("::");
-			if (index > -1)
-				name = name.substr(index + 2);
-			
-			return name;
-		}
 	}
 }

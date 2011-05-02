@@ -50,36 +50,43 @@ package acts.display
 		
 		public function getElements(selector:String):Array {
 			var elements:Array = [];
-			var tmp:Array = selector.split(" ");
-			var type:String = tmp.pop();
-			var indexS:int = type.indexOf("#");
-			var name:String, typeName:String;
+			var expr:Expression = parseExpression(selector);
 			
-			if(indexS > 0) {
-				name = type.substring(indexS + 1);
-				typeName = type.substring(0,indexS);
-				elements = dom.getElementsByName(name);
-			} else if(indexS == 0) {
-				name = type.substring(1);
-				elements = dom.getElementsByName(name);
+			if(expr.name != null) {
+				elements = dom.getElementsByName(expr.name);
 			} else {
-				elements = dom.getElementsByType(type);
+				elements = dom.getElementsByType(expr.type);
 			}
 			
-			
-			if(tmp.length > 0) {
+			if(elements != null && expr.step.length > 0) {
 				var l:int = elements.length;
 				var element:Object;
 				var elts:Array = [];
 				for(var i:int = 0; i < l; i++) {
 					element = elements[i];
-					if(dom.match(element,tmp)) {
+					if(dom.match(element,expr.step)) {
 						elts.push(element);
 					}
 				}
 				elements = elts;
 			}
 			return elements;
+		}
+		
+		public function parseExpression(expr:String):Expression {
+			var step:Array = expr.split(" ");
+			var type:String = step.pop();
+			var indexS:int = type.indexOf("#");
+			var name:String;
+			if(indexS > 0) {
+				name = type.substring(indexS+1);
+				type = type.substring(0,indexS);
+				step.push(type);
+			} else if(indexS == 0) {
+				name = type.substring(1);
+				type = null;
+			}
+			return new Expression(name,type,step);
 		}
 	}
 }

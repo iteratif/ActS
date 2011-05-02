@@ -28,6 +28,7 @@ package acts.system
 	import acts.factories.registry.Registry;
 	
 	import flash.display.DisplayObject;
+	import flash.display.DisplayObjectContainer;
 	import flash.events.Event;
 	import flash.utils.Dictionary;
 	
@@ -49,38 +50,24 @@ package acts.system
 			
 			if(!mainSystem) {
 				mainSystem = this;
-				document.addEventListener(FlexEvent.PREINITIALIZE,preInitializeHandler);
+				var dom:ASDocument = new ASDocument(document as DisplayObjectContainer);
+				dom.elementAdded.add(elementAddedHandler);
+				_finder = new ASFinder(dom);
+				
+				_factory = new ObjectFactory(new Registry());
 			}
-			document.addEventListener(FlexEvent.INITIALIZE,initializeHandler);
-			document.addEventListener(FlexEvent.CREATION_COMPLETE,creationCompleteHandler);
-		}
-		
-		private function preInitializeHandler(e:flash.events.Event):void {
-			document.removeEventListener(FlexEvent.PREINITIALIZE,preInitializeHandler);
-		
-			var dom:ASDocument = new ASDocument(e.target as DisplayObject);
-			dom.elementAdded.add(elementAddedHandler);
-			_finder = new ASFinder(dom);
-			
-			_factory = new ObjectFactory(new Registry());
-		}
 
-		private function initializeHandler(e:FlexEvent):void {
-			document.removeEventListener(FlexEvent.INITIALIZE,initializeHandler);			
-			
 			var i:int, len:int;
 			if(events) {
 				len = events.length;
 				var h:acts.system.Event;
 				for(i = 0; i < len; i++) {
-					h = events[i];
+					h = events[i];					
 					if(!h.trigger) {
-						var f:Function = createDelegate(h.source,h.method,h.parameters);
-						f();
-						continue;
+						document.addEventListener(h.type,createDelegate(h.source,h.method,h.parameters));
+					} else {
+						mainSystem.addEvent(h.trigger,h.type,h.source,h.method,h.parameters);
 					}
-					
-					mainSystem.addEvent(h.type,h.trigger,h.source,h.method,h.parameters);
 				}
 			}
 			
@@ -90,16 +77,6 @@ package acts.system
 					mainSystem.factory.registry.addDefinition(objects[i]);
 				}
 			}
-		}
-		
-		private function creationCompleteHandler(e:FlexEvent):void {
-			document.removeEventListener(FlexEvent.CREATION_COMPLETE,creationCompleteHandler);
-			
-			
-		}
-		
-		private function elementAddedHandler(displayObject:DisplayObject):void {
-			
 		}
 	}
 }

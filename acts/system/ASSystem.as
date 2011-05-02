@@ -25,14 +25,17 @@ package acts.system
 	import acts.core.IContext;
 	import acts.display.ASDocument;
 	import acts.display.ASFinder;
+	import acts.display.Expression;
 	import acts.display.IFinder;
 	import acts.factories.Factory;
 	import acts.factories.ObjectFactory;
 	import acts.factories.registry.IRegistry;
 	
+	import flash.display.DisplayObject;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.system.ApplicationDomain;
+	import flash.utils.Dictionary;
 
 	public class ASSystem
 	{
@@ -51,8 +54,9 @@ package acts.system
 
 		public function ASSystem(dom:ASDocument = null, registry:IRegistry = null)
 		{
-			if(dom)
-				_finder = new ASFinder(dom);
+			if(dom) {
+				_finder = new ASFinder(dom);	
+			}
 			
 			if(registry) {
 				_factory = new ObjectFactory(registry);
@@ -63,14 +67,42 @@ package acts.system
 			return finder.getElement(expr);
 		}
 		
-		public function addEvent(typeEvent:String, expr:String, source:Class, method:String, parameters:Array = null):void {
+		private var mapEvents:Dictionary = new Dictionary();
+		public function addEvent(objectOrExpr:Object, typeEvent:String, source:Class, method:String, parameters:Array = null):void {
 			var element:EventDispatcher = finder.document.rootDocument;
-			if(expr) {
-				element = getTrigger(expr) as EventDispatcher;
+			if(objectOrExpr is String) {
+				element = getTrigger(objectOrExpr.toString()) as EventDispatcher;
+			} else {
+				element = objectOrExpr as EventDispatcher;
 			}
 			
 			if(element) {
 				element.addEventListener(typeEvent,createDelegate(source,method,parameters));
+			} else {
+				var expr:Expression = finder.parseExpression(objectOrExpr.toString());
+				var mapEvent:MappingEvent = new MappingEvent(typeEvent,source,method,parameters,expr.step);
+				if(expr.name != null) {
+					mapEvents[expr.name] = mapEvent;
+				} else {
+					mapEvents[expr.type] = mapEvent;
+				}
+			}
+		}
+		
+		protected function elementAddedHandler(displayObject:DisplayObject):void {
+			var mapEvent:MappingEvent;
+			if(mapEvents[displayObject.name]) {
+				mapEvent = mapEvents[displayObject.name];
+				if(finder.document.match(displayObject,mapEvent.step))
+					displayObject.addEventListener(mapEvent.type,createDelegate(mapEvent.source,mapEvent.method,mapEvent.parameters));
+				return;
+			}
+			
+			var type:String = finder.document.unqualifiedClassName(displayObject);
+			if(mapEvents[type]) {
+				mapEvent = mapEvents[type];
+				if(finder.document.match(displayObject,mapEvent.step))
+					displayObject.addEventListener(mapEvent.type,createDelegate(mapEvent.source,mapEvent.method,mapEvent.parameters));
 			}
 		}
 		
@@ -79,13 +111,15 @@ package acts.system
 				// var start:int = getTimer();
 				if(source != null) {
 					var args:Array = [];
-					var value:Object;
-					var parameter:Parameter;
-					var len:int = parameters.length;
-					for(var i:int = 0; i < len; i++) {
-						parameter = parameters[i];
-						value = getParameterValue(parameter.target,parameter.property);
-						args.push(value);
+					if(parameters != null) {
+						var value:Object;
+						var parameter:Parameter;
+						var len:int = parameters.length;
+						for(var i:int = 0; i < len; i++) {
+							parameter = parameters[i];
+							value = getParameterValue(parameter.target,parameter.property);
+							args.push(value);
+						}
 					}
 					
 					var instance:Object;
@@ -123,5 +157,23 @@ package acts.system
 			
 			return null;
 		}
+		
+	}
+}
+
+class MappingEvent {
+	public var step:Array;
+	
+	public var type:String;
+	public var source:Class;
+	public var method:String;
+	public var parameters:Array;
+	
+	public function MappingEvent(type:String = null, source:Class = null, method:String = null, parameters:Array = null, step:Array = null) {
+		this.type = type;
+		this.step = step;
+		this.source = source;
+		this.method = method;
+		this.parameters = parameters;
 	}
 }
