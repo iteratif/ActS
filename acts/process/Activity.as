@@ -24,64 +24,83 @@ package acts.process
 {
 	import acts.core.Action;
 	import acts.core.Context;
+	import acts.core.IContext;
+	import acts.display.IFinder;
 	import acts.errors.InitialNodeError;
+	import acts.factories.Factory;
+	
+	import flash.utils.getTimer;
 	
 	import org.osflash.signals.Signal;
 
-	public class Activity extends Context
+	public class Activity extends Task implements IContext
 	{
 		public var finish:Signal;
 		
-		private var _currentNode:ActivityNode;
-
-		public function get currentNode():ActivityNode
-		{
-			return _currentNode;
+		public var startTask:Task;
+		private var _currentTask:Task;
+		
+		private var _finder:IFinder;
+		private var _factory:Factory;
+		
+		public function get factory():Factory {
+			return _factory;
 		}
-
-		public function set currentNode(value:ActivityNode):void
-		{
-			if(value != null && value != _currentNode) {
-				setCurrentNode(value);
+		
+		public function set factory(value:Factory):void {
+			_factory = value;
+		}
+		
+		public function get finder():IFinder {
+			return _finder;
+		}
+		
+		public function set finder(value:IFinder):void {
+			if(value != _finder) {
+				_finder = value;
 			}
 		}
 
-		private var startNode:ActivityNode;
+		public function get currentTask():Task {
+			return _currentTask;
+		}
+
+		public function set currentTask(value:Task):void {
+			if(value != null && value != _currentTask) {
+				setCurrentTask(value);
+			}
+		}
 		
-		public function Activity()
-		{
+		public function Activity() {
 			finish = new Signal();
 		}
 		
-		public function addNode(node:ActivityNode, started:Boolean = false):void {
-			if(started)
-				startNode = node;
-		}
-		
 		public function start():void {
-			if(!startNode)
+			if(!startTask)
 				throw new InitialNodeError();
 			
-			currentNode = startNode;
+			currentTask = startTask;
 		}
 		
-		public function setCurrentNode(node:ActivityNode):void {
-			_currentNode = node;
+		public function setCurrentTask(node:Task):void {
+			_currentTask = node;
 			
-			if(currentNode is FinalNode) {
+			if(currentTask is FinalTask) {
 				finish.dispatch();
 				return;
 			}
 			
-			if(currentNode is ExecutableNode)
-				ExecutableNode(currentNode).action.execute(this);
+			if(currentTask is Task)
+				Task(currentTask).execute(this);
 			
-			var transitions:Array = currentNode.transitions;
+			var transitions:Array = currentTask.transitions;
 			var len:int = transitions.length;
 			var t:Transition;
+
 			for(var i:int = 0; i < len; i++) {
 				t = transitions[i];
-				currentNode = t.dest;
+				if(t.executeCondition())
+					currentTask = t.dest;
 			}
 		}
 	}

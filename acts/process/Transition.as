@@ -22,13 +22,24 @@ Contributor(s) :
 */
 package acts.process
 {
+	import org.osflash.signals.Signal;
+
 	public class Transition
 	{
-		public var dest:ActivityNode;
+		public var dest:Task;
+
+		public var conditionFunction:Function;
 		
-		public function Transition(dest:ActivityNode)
+		public function Transition(dest:Task)
 		{
 			this.dest = dest;
+		}
+		
+		public function executeCondition():Boolean {
+			if(conditionFunction != null) {
+				return conditionFunction();
+			}
+			return true;
 		}
 	}
 }

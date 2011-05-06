@@ -35,7 +35,7 @@ package acts.core
 		public var source:Object;
 		public var eventType:String;
 		public var target:State;
-		public var action:Action;
+		public var action:IExecutable;
 		
 		private var expression:Expression;
 		protected var state:State;

@@ -148,8 +148,8 @@ package acts.core
 			signals = [];
 		}
 		
-		private function executeAction(action:Action):void {
-			action.execute(sequencer);
+		private function executeAction(exec:IExecutable):void {
+			exec.execute(sequencer);
 		}
 	}
 }

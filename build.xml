@@ -3,7 +3,7 @@
 	<property environment="env" />
 	<fail unless="env.FLEX_HOME" message="FLEX_HOME needs to be defined as an environment variable or in the Ant build." />
 	<property name="FLEX_HOME" value="${env.FLEX_HOME}" />
-	<property name="project.name" value="ActS" />
+	<property name="project.name" value="acts" />
 	<property name="output.dir" value="../bin" />
 	
 	<taskdef resource="flexTasks.tasks" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />

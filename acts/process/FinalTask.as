@@ -22,9 +22,9 @@ Contributor(s) :
 */
 package acts.process
 {
-	public class FinalNode extends ActivityNode
+	public class FinalTask extends Task
 	{
-		public function FinalNode()
+		public function FinalTask()
 		{
 			super();
 		}

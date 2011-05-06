@@ -22,24 +22,15 @@ Contributor(s) :
 */
 package acts.core
 {
-	import acts.process.Parameter;
-
-	public class Action
+	public class Action implements IExecutable
 	{
 		public var source:Class;
 		public var methodName:String;
-		
-		public var parameters:Array;
 		
 		public function Action(source:Class = null, methodName:String = null)
 		{
 			this.source = source;
 			this.methodName = methodName;
-			parameters = [];
-		}
-		
-		public function setParameter(name:String, type:Class):void {
-			parameters.push(new Parameter(name,type));
 		}
 		
 		public function execute(context:IContext,...args):void {

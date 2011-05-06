@@ -28,12 +28,9 @@
 	
 	<!-- acts.process -->
 	<component id="Activity" class="acts.process.Activity" />
-	<component id="ActivityNode" class="acts.process.ActivityNode" />
-	<component id="ExecutableNode" class="acts.process.ExecutableNode" />
-	<component id="FinalNode" class="acts.process.FinalNode" />
-	<component id="acts.process.Parameter" class="acts.process.Parameter" />
+	<component id="Task" class="acts.process.Task" />
+	<component id="FinalTask" class="acts.process.FinalTask" />
 	<component id="acts.process.Transition" class="acts.process.Transition" />
-	<component id="Value" class="acts.process.Value" />
 	
 	<!-- acts.factories -->
 	<component id="Factory" class="acts.factories.Factory" />
