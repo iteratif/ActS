@@ -36,6 +36,7 @@ package acts.core
 		public var eventType:String;
 		public var target:State;
 		public var action:IExecutable;
+		public var conditionFunction:Function;
 		
 		private var expression:Expression;
 		protected var state:State;
@@ -63,13 +64,15 @@ package acts.core
 			}
 		}
 		
-		public function setCondition(sourceOrExp:Object, property:String, operation:String, value:Object):void {
-			expression = new Expression(sourceOrExp, property, operation, value);
-			expression.finder = state.sequencer.finder;
+		private function evaluate():Boolean {
+			if(conditionFunction != null) {
+				return conditionFunction();
+			}
+			return true;
 		}
 		
 		private function eventHandler(e:flash.events.Event):void {
-			if(expression != null && !expression.evaluate())
+			if(expression != null && !evaluate())
 				return;
 			
 			if(action != null)
