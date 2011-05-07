@@ -35,8 +35,6 @@ package acts.process
 
 	public class Activity extends Task implements IContext
 	{
-		public var finish:Signal;
-		
 		public var startTask:Task;
 		private var _currentTask:Task;
 		
@@ -72,7 +70,7 @@ package acts.process
 		}
 		
 		public function Activity() {
-			finish = new Signal();
+			completed = new Signal();
 		}
 		
 		public function start():void {
@@ -86,13 +84,16 @@ package acts.process
 			_currentTask = node;
 			
 			if(currentTask is FinalTask) {
-				finish.dispatch();
+				completed.dispatch();
 				return;
 			}
 			
-			if(currentTask is Task)
-				Task(currentTask).execute(this);
+			currentTask.completed.add(taskCompleted);
+			currentTask.execute(this);
 			
+		}
+		
+		protected function taskCompleted():void {
 			var transitions:Array = currentTask.transitions;
 			var len:int = transitions.length;
 			var t:Transition;

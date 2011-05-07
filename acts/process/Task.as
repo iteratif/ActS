@@ -39,7 +39,7 @@ package acts.process
 		public var source:Class;
 		public var methodName:String;
 		
-		public var finished:Signal;
+		public var completed:Signal;
 		
 		public function Task(source:Class = null, methodName:String = null)
 		{
@@ -48,7 +48,7 @@ package acts.process
 			paramTypes = [];
 			this.source = source;
 			this.methodName = methodName;
-			finished = new Signal();
+			completed = new Signal();
 		}
 		
 		public function addTransition(dest:Task):Transition {
@@ -62,7 +62,7 @@ package acts.process
 		}
 		
 		public function setOutput(type:Class):void {
-			finished.valueClasses = [type];
+			completed.valueClasses = [type];
 		}
 		
 		public function assignInput(value:*):void {
@@ -70,42 +70,59 @@ package acts.process
 		}
 		
 		public function execute(context:IContext, ...args):void {
-				var numInputs:int = inputs.length;
-				var numParameters:int = paramTypes.length;
+			var numInputs:int = inputs.length;
+			var numParameters:int = paramTypes.length;
+			
+			if(numInputs < numParameters) {
+				throw new ArgumentError("Incorrect number of arguments. Expected at least " + numInputs + " but received " + numParameters + ".");
+			}
+			
+			var input:*;
+			var type:Class;
+			var params:Array = [];
+			for(var i:int = 0; i < numParameters; i++) {
+				input = inputs[i];
+				type = paramTypes[i];
 				
-				if(numInputs < numParameters) {
-					throw new ArgumentError("Incorrect number of arguments. Expected at least " + numInputs + " but received " + numParameters + ".");
+				if (input === null || input is type) {
+					params.push(input);
+					continue;	
 				}
 				
-				var input:*;
-				var type:Class;
-				var params:Array = [];
-				for(var i:int = 0; i < numParameters; i++) {
-					input = inputs[i];
-					type = paramTypes[i];
-					
-					if (input === null || input is type) {
-						params.push(input);
-						continue;	
+				throw new ArgumentError("Value object <" + input +"> is not an instance of <" + type + ">.");
+			}
+			
+			var instance:Object = createObject(context);
+			if(instance != null) {
+				var f:Function = instance[methodName];
+				callMethod(f,params);
+			}
+		}
+		
+		public function finish(result:* = null):void {
+			if(result != null)
+				completed.dispatch(result);
+			else
+				completed.dispatch();
+		}
+		
+		protected function createObject(context:IContext):Object {
+			var instance:Object;
+			if(source != null) {
+				instance = new source();
+				if(instance.hasOwnProperty(methodName)) {
+					if(instance is IContext) {
+						IContext(instance).finder = context.finder;
+						IContext(instance).factory = context.factory;
 					}
-					
-					throw new ArgumentError("Value object <" + input +"> is not an instance of <" + type + ">.");
 				}
-				
-				if(source != null) {
-					// TODO get class from ApplicationDomain
-					var instance:Object = new source();
-					if(instance.hasOwnProperty(methodName)) {
-						if(instance is IContext) {
-							IContext(instance).finder = context.finder;
-							IContext(instance).factory = context.factory;
-						}
-						
-						var f:Function = instance[methodName];
-						var result:* = f.apply(null,params);
-						finished.dispatch(result);
-					}
-				}
+			}
+			return instance;
+		}
+		
+		protected function callMethod(method:Function, params:Array):void {
+			var result:* = method.apply(null,params);
+			finish(result);
 		}
 	}
 }
