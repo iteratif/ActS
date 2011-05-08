@@ -32,6 +32,7 @@
 	<component id="FinalTask" class="acts.process.FinalTask" />
 	<component id="Async" class="acts.process.Async" />
 	<component id="AsyncTask" class="acts.process.AsyncTask" />
+	<component id="AsyncContext" class="acts.process.AsyncContext" />
 	<component id="acts.process.Transition" class="acts.process.Transition" />
 	
 	<!-- acts.factories -->
