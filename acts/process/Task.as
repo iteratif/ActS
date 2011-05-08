@@ -29,7 +29,7 @@ package acts.process
 	import org.osflash.signals.Signal;
 	
 	public class Task implements IExecutable
-	{
+	{	
 		public var inputs:Array;
 		
 		public var transitions:Array;
@@ -40,7 +40,8 @@ package acts.process
 		public var methodName:String;
 		
 		public var completed:Signal;
-		
+		public var result:Signal;
+
 		public function Task(source:Class = null, methodName:String = null)
 		{
 			inputs = [];
@@ -49,6 +50,7 @@ package acts.process
 			this.source = source;
 			this.methodName = methodName;
 			completed = new Signal();
+			result = new Signal();
 		}
 		
 		public function addTransition(dest:Task):Transition {
@@ -62,7 +64,7 @@ package acts.process
 		}
 		
 		public function setOutput(type:Class):void {
-			completed.valueClasses = [type];
+			result.valueClasses = [type];
 		}
 		
 		public function assignInput(value:*):void {
@@ -99,11 +101,12 @@ package acts.process
 			}
 		}
 		
-		public function finish(result:* = null):void {
+		public function finish(value:* = null):void {
 			if(result != null)
-				completed.dispatch(result);
+				result.dispatch(value);
 			else
-				completed.dispatch();
+				result.dispatch();
+			completed.dispatch();
 		}
 		
 		protected function createObject(context:IContext):Object {

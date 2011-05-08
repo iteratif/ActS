@@ -70,6 +70,7 @@ package acts.process
 		}
 		
 		public function Activity() {
+			super();
 			completed = new Signal();
 		}
 		
