@@ -117,7 +117,7 @@ package acts.system
 						var len:int = parameters.length;
 						for(var i:int = 0; i < len; i++) {
 							parameter = parameters[i];
-							value = getParameterValue(parameter.target,parameter.property);
+							value = getParameterValue(parameter);
 							args.push(value);
 						}
 					}
@@ -148,7 +148,11 @@ package acts.system
 			return f;
 		}
 		
-		private function getParameterValue(target:String, property:String):Object {
+		private function getParameterValue(parameter:Parameter):Object {
+			if(parameter.value !== null) return parameter.value;
+			
+			var target:String = parameter.target;
+			var property:String = parameter.property;
 			var element:Object = finder.getElement(target);
 			if(element != null) {
 				if(element.hasOwnProperty(property))

@@ -26,6 +26,7 @@ package acts.system
 	{
 		public var target:String;
 		public var property:String;
+		public var value:Object;
 		
 		public function Parameter(target:String = null, property:String = null)
 		{
