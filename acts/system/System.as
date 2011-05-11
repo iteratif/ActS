@@ -78,5 +78,12 @@ package acts.system
 				}
 			}
 		}
+		
+		protected override function createDelegate(source:Class, method:String, parameters:Array=null):Function {
+			var f:* = super.createDelegate(source,method,parameters);
+			f.finder = mainSystem.finder;
+			f.factory = mainSystem.factory;
+			return f;
+		}
 	}
 }
