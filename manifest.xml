@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <componentPackage>
 	<!-- acts.core -->
-	<component id="Action" class="acts.core.Action" />
+	<component id="acts.core.Action" class="acts.core.Action" />
 	<component id="Context" class="acts.core.Context" />
 	<component id="acts.core.Event" class="acts.core.Event" />
 	<component id="Expression" class="acts.core.Expression" />
@@ -23,7 +23,7 @@
 	
 	<!-- acts.system -->
 	<component id="System" class="acts.system.System" />
-	<component id="Event" class="acts.system.Event"/>
+	<component id="Action" class="acts.system.Action"/>
 	<component id="Parameter" class="acts.system.Parameter"/>
 	
 	<!-- acts.process -->

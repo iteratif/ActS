@@ -60,7 +60,7 @@ package acts.system
 			var i:int, len:int;
 			if(events) {
 				len = events.length;
-				var h:acts.system.Event;
+				var h:acts.system.Action;
 				for(i = 0; i < len; i++) {
 					h = events[i];					
 					if(!h.trigger) {

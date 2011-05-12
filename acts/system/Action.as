@@ -23,7 +23,7 @@ Contributor(s) :
 package acts.system
 {
 	[DefaultProperty("parameters")]
-	public class Event
+	public class Action
 	{
 		public var type:String;
 		public var trigger:String;
@@ -32,7 +32,7 @@ package acts.system
 		
 		public var parameters:Array = [];
 		
-		public function Event()
+		public function Action()
 		{
 		}
 	}
