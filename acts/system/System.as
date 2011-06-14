@@ -42,14 +42,17 @@ package acts.system
 		
 		private var document:Object;
 		
-		private static var mainSystem:System;
+		private static var _mainSystem:System;
 		
-		public function initialized(document:Object, id:String):void
-		{
+		public static function get mainSystem():System {
+			return _mainSystem;
+		}
+		
+		public function initialized(document:Object, id:String):void {
 			this.document = document;
 			
 			if(!mainSystem) {
-				mainSystem = this;
+				_mainSystem = this;
 				var dom:ASDocument = new ASDocument(document as DisplayObjectContainer);
 				dom.elementAdded.add(elementAddedHandler);
 				_finder = new ASFinder(dom);
@@ -62,12 +65,8 @@ package acts.system
 				len = events.length;
 				var h:acts.system.Action;
 				for(i = 0; i < len; i++) {
-					h = events[i];					
-					if(!h.trigger) {
-						document.addEventListener(h.type,createDelegate(h.source,h.method,h.parameters));
-					} else {
-						mainSystem.addEvent(h.trigger,h.type,h.source,h.method,h.parameters);
-					}
+					h = events[i];
+					mainSystem.addEvent(h.trigger,h.type,h.source,h.method,h.parameters,h.eventArgs);
 				}
 			}
 			
@@ -77,13 +76,6 @@ package acts.system
 					mainSystem.factory.registry.addDefinition(objects[i]);
 				}
 			}
-		}
-		
-		protected override function createDelegate(source:Class, method:String, parameters:Array=null):Function {
-			var f:* = super.createDelegate(source,method,parameters);
-			f.finder = mainSystem.finder;
-			f.factory = mainSystem.factory;
-			return f;
 		}
 	}
 }
