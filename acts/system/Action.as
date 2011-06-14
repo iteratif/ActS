@@ -29,6 +29,7 @@ package acts.system
 		public var trigger:String;
 		public var source:Class;
 		public var method:String;
+		public var eventArgs:Boolean = false;
 		
 		public var parameters:Array = [];
 		

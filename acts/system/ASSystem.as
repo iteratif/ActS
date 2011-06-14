@@ -30,12 +30,14 @@ package acts.system
 	import acts.factories.Factory;
 	import acts.factories.ObjectFactory;
 	import acts.factories.registry.IRegistry;
+	import acts.utils.ClassUtil;
 	
 	import flash.display.DisplayObject;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.system.ApplicationDomain;
 	import flash.utils.Dictionary;
+	import flash.utils.getTimer;
 
 	public class ASSystem
 	{
@@ -55,7 +57,8 @@ package acts.system
 		public function ASSystem(dom:ASDocument = null, registry:IRegistry = null)
 		{
 			if(dom) {
-				_finder = new ASFinder(dom);	
+				_finder = new ASFinder(dom);
+				dom.elementAdded.add(elementAddedHandler);
 			}
 			
 			if(registry) {
@@ -68,84 +71,107 @@ package acts.system
 		}
 		
 		private var mapEvents:Dictionary = new Dictionary();
-		public function addEvent(objectOrExpr:Object, typeEvent:String, source:Class, method:String, parameters:Array = null):void {
-			var element:EventDispatcher = finder.document.rootDocument;
+		public function addEvent(objectOrExpr:Object, typeEvent:String, source:Class, method:String, parameters:Array = null, eventArgs:Boolean = false):void {
+			var element:DisplayObject = finder.document.rootDocument;
 			if(objectOrExpr is String) {
-				element = getTrigger(objectOrExpr.toString()) as EventDispatcher;
-			} else {
-				element = objectOrExpr as EventDispatcher;
+				element = getTrigger(objectOrExpr.toString()) as DisplayObject;
+			} else if(objectOrExpr is DisplayObject) {
+				element = objectOrExpr as DisplayObject;
 			}
 			
 			if(element) {
-				element.addEventListener(typeEvent,createDelegate(source,method,parameters));
+				if(!mapEvents[element.name])
+					mapEvents[element.name] = [];
+				
+				mapEvents[element.name].push(new MappingEvent(typeEvent,source,method,parameters,null,eventArgs));
+				element.addEventListener(typeEvent,firedEventHandler);
 			} else {
 				var expr:Expression = finder.parseExpression(objectOrExpr.toString());
-				var mapEvent:MappingEvent = new MappingEvent(typeEvent,source,method,parameters,expr.step);
-				if(expr.name != null) {
-					mapEvents[expr.name] = mapEvent;
-				} else {
-					mapEvents[expr.type] = mapEvent;
-				}
+				var mapEvent:MappingEvent = new MappingEvent(typeEvent,source,method,parameters,expr.step,eventArgs);
+				var mapName:String = (expr.name != null) ? expr.name : expr.type;
+				if(!mapEvents[mapName])
+					mapEvents[mapName] = [];
+				mapEvents[mapName].push(mapEvent);
 			}
 		}
 		
 		protected function elementAddedHandler(displayObject:DisplayObject):void {
-			var mapEvent:MappingEvent;
+			var maps:Array;
+			var type:String = ClassUtil.unqualifiedClassName(displayObject);
+			
 			if(mapEvents[displayObject.name]) {
-				mapEvent = mapEvents[displayObject.name];
-				if(finder.document.match(displayObject,mapEvent.step))
-					displayObject.addEventListener(mapEvent.type,createDelegate(mapEvent.source,mapEvent.method,mapEvent.parameters));
+				maps = mapEvents[displayObject.name];
+			} else if(mapEvents[type]) {
+				maps = mapEvents[type];
+			} else {
 				return;
 			}
 			
-			var type:String = finder.document.unqualifiedClassName(displayObject);
-			if(mapEvents[type]) {
-				mapEvent = mapEvents[type];
+			var mapEvent:MappingEvent;
+			var len:int = maps.length;
+			for(var i:int = 0; i < len; i++) {
+				mapEvent = maps[i];
 				if(finder.document.match(displayObject,mapEvent.step))
-					displayObject.addEventListener(mapEvent.type,createDelegate(mapEvent.source,mapEvent.method,mapEvent.parameters));
+					displayObject.addEventListener(mapEvent.type,firedEventHandler);
 			}
 		}
 		
-		protected function createDelegate(source:Class, method:String, parameters:Array = null):Function {
-			var f:* = function(e:flash.events.Event = null):void {
-				// var start:int = getTimer();
-				if(source != null) {
-					var args:Array = [];
-					if(parameters != null) {
-						var value:Object;
-						var parameter:Parameter;
-						var len:int = parameters.length;
-						for(var i:int = 0; i < len; i++) {
-							parameter = parameters[i];
-							value = getParameterValue(parameter);
-							args.push(value);
-						}
-					}
-					
-					var instance:Object;
-					if(source is String) {
-						var cls:Class = ApplicationDomain.currentDomain.getDefinition(String(source)) as Class;
-						if(cls != null) {
-							instance = new cls();
-						}
-					} else {
-						instance = new source();
-					}
-					
-					if(instance is IContext) {
-						IContext(instance).finder = arguments.callee.finder;
-						IContext(instance).factory = arguments.callee.factory;
-					}
-					var func:Function = instance[method];
-					if(func != null) {
-						func.apply(null,args);
-					}
-					// trace(getTimer() - start,"ms");
+		protected function firedEventHandler(e:Event):void {
+			var displayObject:DisplayObject = e.target as DisplayObject;
+			var type:String = ClassUtil.unqualifiedClassName(displayObject);
+			
+			var maps:Array;
+			if(mapEvents[displayObject.name]) {
+				maps = mapEvents[displayObject.name];
+			} else if(mapEvents[type]) {
+				maps = mapEvents[type];
+			}
+			
+			var len:int = maps.length;
+			var mapEvent:MappingEvent;
+			var i:int;
+			for(i = 0; i < len; i++) {
+				mapEvent = maps[i];
+				if(mapEvent.type == e.type)
+					break;
+			}
+			
+			if(mapEvent.source != null) {
+				var args:Array = [];
+				if(mapEvent.eventArgs) {
+					args.push(e);
 				}
-			};
-			f.finder = finder;
-			f.factory = factory;
-			return f;
+				
+				if(mapEvent.parameters != null) {
+					var value:Object;
+					var parameter:Parameter;
+					len = mapEvent.parameters.length;
+					for(i = 0; i < len; i++) {
+						parameter = mapEvent.parameters[i];
+						value = getParameterValue(parameter);
+						args.push(value);
+					}
+				}
+				
+				var instance:Object;
+				if(mapEvent.source is String) {
+					var cls:Class = ApplicationDomain.currentDomain.getDefinition(String(mapEvent.source)) as Class;
+					if(cls != null) {
+						instance = new cls();
+					}
+				} else {
+					instance = new mapEvent.source();
+				}
+				
+				if(instance is IContext) {
+					IContext(instance).finder = finder;
+					IContext(instance).factory = factory;
+				}
+				var func:Function = instance[mapEvent.method];
+				if(func != null) {
+					func.apply(null,args);
+				}
+			}
 		}
 		
 		private function getParameterValue(parameter:Parameter):Object {
@@ -172,12 +198,14 @@ class MappingEvent {
 	public var source:Class;
 	public var method:String;
 	public var parameters:Array;
+	public var eventArgs:Boolean;
 	
-	public function MappingEvent(type:String = null, source:Class = null, method:String = null, parameters:Array = null, step:Array = null) {
+	public function MappingEvent(type:String = null, source:Class = null, method:String = null, parameters:Array = null, step:Array = null, eventArgs:Boolean = false) {
 		this.type = type;
-		this.step = step;
+		this.step = step != null ? step : [];
 		this.source = source;
 		this.method = method;
 		this.parameters = parameters;
+		this.eventArgs = eventArgs;
 	}
 }
