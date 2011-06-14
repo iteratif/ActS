@@ -22,6 +22,8 @@ Contributor(s) :
 */
 package acts.display
 {
+	import acts.utils.ClassUtil;
+	
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
 	import flash.events.Event;
@@ -86,7 +88,7 @@ package acts.display
 				selector = selectors[index--];
 				
 				while(o != null && !checked) {
-					if(unqualifiedClassName(o) == selector) {
+					if(ClassUtil.unqualifiedClassName(o) == selector) {
 						count++;
 						checked = true;
 					}
@@ -106,20 +108,6 @@ package acts.display
 					insertElement(container.getChildAt(i));
 				}
 			}
-		}
-		
-		public function unqualifiedClassName(object:Object):String {
-			var name:String;
-			if (object is String)
-				name = object as String;
-			else
-				name = getQualifiedClassName(object);
-			
-			var index:int = name.indexOf("::");
-			if (index > -1)
-				name = name.substr(index + 2);
-			
-			return name;
 		}
 		
 		protected function addBehaviors(dispatcher:DisplayObject):void {
@@ -163,7 +151,7 @@ package acts.display
 		}	
 		
 		private function insertElement(elt:Object):void {
-			var className:String = unqualifiedClassName(elt);
+			var className:String = ClassUtil.unqualifiedClassName(elt);
 			
 			// trace("insert",className,elt.name);
 			
@@ -186,7 +174,7 @@ package acts.display
 		
 		protected function removedHandler(e:Event):void {
 			var elt:Object = e.target;
-			var className:String = unqualifiedClassName(elt);
+			var className:String = ClassUtil.unqualifiedClassName(elt);
 			
 			// trace(e.type,className,elt.name);
 			
