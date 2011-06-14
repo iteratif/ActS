@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<design>
+<design version="2">
 	<namespaces>
      <namespace prefix="acts" uri="http://www.iteratif.fr/acts"/>
    </namespaces>
