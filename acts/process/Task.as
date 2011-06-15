@@ -39,6 +39,7 @@ package acts.process
 		public var source:Class;
 		public var methodName:String;
 		
+		public var entry:Signal;
 		public var completed:Signal;
 		public var result:Signal;
 
@@ -49,8 +50,9 @@ package acts.process
 			paramTypes = [];
 			this.source = source;
 			this.methodName = methodName;
-			completed = new Signal();
+			entry = new Signal(Task);
 			result = new Signal();
+			completed = new Signal();
 		}
 		
 		public function addTransition(dest:Task):Transition {
@@ -72,6 +74,8 @@ package acts.process
 		}
 		
 		public function execute(context:IContext, ...args):void {
+			entry.dispatch(this);
+			
 			var numInputs:int = inputs.length;
 			var numParameters:int = paramTypes.length;
 			
