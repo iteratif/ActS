@@ -58,6 +58,16 @@ package acts.process
 				_finder = value;
 			}
 		}
+		
+		public function find(selector:String):Object {
+			if (selector.charAt(0)=="*") {
+				return _finder.getElements(selector.substring(1));
+			} else if (selector.charAt(0)=="+") {
+				return _factory.getObject(selector.substring(1));
+			} else {
+				return _finder.getElement(selector);
+			}
+		}
 
 		public function get currentTask():Task {
 			return _currentTask;
@@ -101,8 +111,10 @@ package acts.process
 
 			for(var i:int = 0; i < len; i++) {
 				t = transitions[i];
-				if(t.executeCondition())
+				if(t.executeCondition()) {
 					currentTask = t.dest;
+					break;
+				}
 			}
 		}
 	}
