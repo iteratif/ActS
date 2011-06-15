@@ -27,6 +27,16 @@ package acts.process
 		public function set finder(value:IFinder):void
 		{
 			_finder = value;
-		}	
+		}
+		
+		public function find(selector:String):Object {
+			if (selector.charAt(0)=="*") {
+				return _finder.getElements(selector.substring(1));
+			} else if (selector.charAt(0)=="+") {
+				return _factory.getObject(selector.substring(1));
+			} else {
+				return _finder.getElement(selector);
+			}
+		}
 	}
 }

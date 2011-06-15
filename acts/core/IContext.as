@@ -27,6 +27,6 @@ package acts.core
 	
 	public interface IContext extends IFactoryContext, IViewContext
 	{
-		
+		function find(selector:String):Object;
 	}
 }
