@@ -41,7 +41,7 @@ package acts.system
 
 	public class ASSystem
 	{
-		public var events:Array;
+		public var actions:Array;
 		
 		protected var _finder:IFinder;
 		protected var _factory:Factory;
