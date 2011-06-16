@@ -25,7 +25,7 @@ package acts.system
 	[DefaultProperty("parameters")]
 	public class Action
 	{
-		public var type:String;
+		public var event:String;
 		public var trigger:String;
 		public var source:Class;
 		public var method:String;
