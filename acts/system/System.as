@@ -35,7 +35,7 @@ package acts.system
 	import mx.core.IMXMLObject;
 	import mx.events.FlexEvent;
 	
-	[DefaultProperty("events")]
+	[DefaultProperty("actions")]
 	public class System extends ASSystem implements IMXMLObject
 	{	
 		public var objects:Array;
@@ -61,12 +61,12 @@ package acts.system
 			}
 
 			var i:int, len:int;
-			if(events) {
-				len = events.length;
+			if(actions) {
+				len = actions.length;
 				var h:acts.system.Action;
 				for(i = 0; i < len; i++) {
-					h = events[i];
-					mainSystem.addEvent(h.trigger,h.type,h.source,h.method,h.parameters,h.eventArgs);
+					h = actions[i];
+					mainSystem.addEvent(h.trigger,h.event,h.source,h.method,h.parameters,h.eventArgs);
 				}
 			}
 			
