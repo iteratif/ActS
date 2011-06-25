@@ -64,9 +64,13 @@ package acts.system
 			if(actions) {
 				len = actions.length;
 				var h:acts.system.Action;
+				var trigger:Object;
 				for(i = 0; i < len; i++) {
 					h = actions[i];
-					mainSystem.addEvent(h.trigger,h.event,h.source,h.method,h.parameters,h.eventArgs);
+					trigger = h.trigger;
+					if(!trigger)
+						trigger = document;
+					mainSystem.addEvent(trigger,h.event,h.source,h.method,h.parameters,h.eventArgs);
 				}
 			}
 			

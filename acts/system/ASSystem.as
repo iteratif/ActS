@@ -72,7 +72,7 @@ package acts.system
 		
 		private var mapEvents:Dictionary = new Dictionary();
 		public function addEvent(objectOrExpr:Object, typeEvent:String, source:Class, method:String, parameters:Array = null, eventArgs:Boolean = false):void {
-			var element:DisplayObject = finder.document.rootDocument;
+			var element:DisplayObject;
 			if(objectOrExpr is String) {
 				element = getTrigger(objectOrExpr.toString()) as DisplayObject;
 			} else if(objectOrExpr is DisplayObject) {
