@@ -61,10 +61,6 @@ package acts.system
 			}
 		}
 		
-		public function getTrigger(expr:String):Object {
-			return finder.getElement(expr);
-		}
-		
 		private var mapActions:Dictionary = new Dictionary();
 		public function addAction(action:Action):void {
 			var trigger:Object = action.trigger;
