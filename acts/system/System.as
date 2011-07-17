@@ -65,12 +65,10 @@ package acts.system
 			if(actions) {
 				len = actions.length;
 				var action:acts.system.Action;
-				var trigger:Object;
 				for(i = 0; i < len; i++) {
 					action = actions[i];
-					trigger = action.trigger;
-					if(!trigger)
-						trigger = document;
+					if(!action.trigger)
+						action.trigger = document;
 					mainSystem.addAction(action);
 				}
 			}

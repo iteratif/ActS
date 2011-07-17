@@ -34,10 +34,7 @@ package acts.system
 	
 	import flash.display.DisplayObject;
 	import flash.events.Event;
-	import flash.events.EventDispatcher;
-	import flash.system.ApplicationDomain;
 	import flash.utils.Dictionary;
-	import flash.utils.getTimer;
 
 	public class ASSystem
 	{	
@@ -89,25 +86,29 @@ package acts.system
 		}
 		
 		protected function elementAddedHandler(displayObject:DisplayObject):void {
-			var actions:Array = mapActions[displayObject.name];
-			if(!actions) {
-				var type:String = ClassUtil.unqualifiedClassName(displayObject);
-				actions = mapActions[type];
-			}
+			var actions:Array = getActions(displayObject);
 			
 			if(actions) {
 				var action:Action;
 				var len:int = actions.length;
+				var expr:Expression;
+				var matched:Boolean = true;
 				for(var i:int = 0; i < len; i++) {
 					action = actions[i];
-					displayObject.addEventListener(action.event,firedEventHandler);
+					if(action.trigger is String) { 
+						expr = finder.parseExpression(action.trigger.toString());
+						matched = finder.document.match(displayObject,expr.step);
+					}
+					
+					if(matched)
+						displayObject.addEventListener(action.event,firedEventHandler);
 				}
 			}
 		}
 		
 		protected function firedEventHandler(e:Event):void {
-			var displayObject:DisplayObject = e.target as DisplayObject;
-			var actions:Array = mapActions[displayObject.name];
+			var displayObject:DisplayObject = e.currentTarget as DisplayObject;
+			var actions:Array = getActions(displayObject);
 			if(actions) {
 				var action:Action;
 				var instance:Object;
@@ -121,13 +122,39 @@ package acts.system
 							IContext(instance).finder = finder;
 							IContext(instance).factory = factory;
 						}
+						
 						var func:Function = instance[action.method];
 						if(func != null) {
-							func();
+							var args:Array = [];
+							
+							if(action.eventArgs)
+								args.push(e);
+							
+							if(action.parameters != null) {
+								var value:Object;
+								var parameter:Parameter;
+								len = action.parameters.length;
+								for(i = 0; i < len; i++) {
+									parameter = action.parameters[i];
+									value = getParameterValue(parameter);
+									args.push(value);
+								}
+							}
+							
+							func.apply(null,args);
 						}
 					}
 				}
 			}
+		}
+		
+		protected function getActions(displayObject:DisplayObject):Array {
+			var actions:Array = mapActions[displayObject.name];
+			if(!actions) {
+				var type:String = ClassUtil.unqualifiedClassName(displayObject);
+				actions = mapActions[type];
+			}
+			return actions;
 		}
 		
 		protected function createObject(action:Action):Object {
