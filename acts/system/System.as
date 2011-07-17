@@ -71,7 +71,7 @@ package acts.system
 					trigger = h.trigger;
 					if(!trigger)
 						trigger = document;
-					mainSystem.addEvent(trigger,h.event,h.source,h.method,h.parameters,h.eventArgs);
+					mainSystem.addAction(trigger,h.event,h.source,h.method,h.parameters,h.eventArgs);
 				}
 			}
 			

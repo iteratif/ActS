@@ -150,7 +150,7 @@ package acts.display
 			insertElement(elt);
 		}	
 		
-		private function insertElement(elt:Object):void {
+		protected function insertElement(elt:Object):void {
 			var className:String = ClassUtil.unqualifiedClassName(elt);
 			
 			// trace("insert",className,elt.name);

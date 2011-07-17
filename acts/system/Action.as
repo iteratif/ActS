@@ -26,15 +26,21 @@ package acts.system
 	public class Action
 	{
 		public var event:String;
-		public var trigger:String;
+		public var trigger:Object;
 		public var source:Class;
 		public var method:String;
-		public var eventArgs:Boolean = false;
+		public var eventArgs:Boolean;
 		
-		public var parameters:Array = [];
+		public var parameters:Array;
 		
-		public function Action()
+		public function Action(trigger:Object = null, event:String = null, source:Class = null, method:String = null, eventArgs:Boolean = false)
 		{
+			this.trigger = trigger;
+			this.event = event;
+			this.source = source;
+			this.method = method;
+			this.eventArgs = eventArgs;
+			parameters = [];
 		}
 	}
 }
