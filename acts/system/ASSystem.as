@@ -69,8 +69,8 @@ package acts.system
 		}
 		
 		private var mapActions:Dictionary = new Dictionary();
-		public function addAction(/*action:Action*/objectOrExpr:Object, typeEvent:String, source:Class, method:String, parameters:Array = null, eventArgs:Boolean = false):void {
-			/*var trigger:Object = action.trigger;
+		public function addAction(action:Action):void {
+			var trigger:Object = action.trigger;
 			
 			if(trigger is String) {
 				var expr:Expression = finder.parseExpression(trigger.toString());
@@ -85,32 +85,11 @@ package acts.system
 				arr = [];
 				mapActions[trigger] = arr;
 			}
-			arr.push(action);*/
-			var element:DisplayObject;
-			if(objectOrExpr is String) {
-				element = getTrigger(objectOrExpr.toString()) as DisplayObject;
-			} else if(objectOrExpr is DisplayObject) {
-				element = objectOrExpr as DisplayObject;
-			}
-			
-			if(element) {
-				if(!mapActions[element.name])
-					mapActions[element.name] = [];
-				
-				mapActions[element.name].push(new MappingEvent(typeEvent,source,method,parameters,null,eventArgs));
-				element.addEventListener(typeEvent,firedEventHandler);
-			} else {
-				var expr:Expression = finder.parseExpression(objectOrExpr.toString());
-				var mapEvent:MappingEvent = new MappingEvent(typeEvent,source,method,parameters,expr.step,eventArgs);
-				var mapName:String = (expr.name != null) ? expr.name : expr.type;
-				if(!mapActions[mapName])
-					mapActions[mapName] = [];
-				mapActions[mapName].push(mapEvent);
-			}
+			arr.push(action);
 		}
 		
 		protected function elementAddedHandler(displayObject:DisplayObject):void {
-			/*var actions:Array = mapActions[displayObject.name];
+			var actions:Array = mapActions[displayObject.name];
 			if(!actions) {
 				var type:String = ClassUtil.unqualifiedClassName(displayObject);
 				actions = mapActions[type];
@@ -123,30 +102,12 @@ package acts.system
 					action = actions[i];
 					displayObject.addEventListener(action.event,firedEventHandler);
 				}
-			}*/
-			var maps:Array;
-			var type:String = ClassUtil.unqualifiedClassName(displayObject);
-			
-			if(mapActions[displayObject.name]) {
-				maps = mapActions[displayObject.name];
-			} else if(mapActions[type]) {
-				maps = mapActions[type];
-			} else {
-				return;
-			}
-			
-			var mapEvent:MappingEvent;
-			var len:int = maps.length;
-			for(var i:int = 0; i < len; i++) {
-				mapEvent = maps[i];
-				if(finder.document.match(displayObject,mapEvent.step))
-					displayObject.addEventListener(mapEvent.type,firedEventHandler);
 			}
 		}
 		
 		protected function firedEventHandler(e:Event):void {
 			var displayObject:DisplayObject = e.target as DisplayObject;
-			/*var actions:Array = mapActions[displayObject.name];
+			var actions:Array = mapActions[displayObject.name];
 			if(actions) {
 				var action:Action;
 				var instance:Object;
@@ -165,60 +126,6 @@ package acts.system
 							func();
 						}
 					}
-				}
-			}*/
-			var type:String = ClassUtil.unqualifiedClassName(displayObject);
-			
-			var maps:Array;
-			if(mapActions[displayObject.name]) {
-				maps = mapActions[displayObject.name];
-			} else if(mapActions[type]) {
-				maps = mapActions[type];
-			}
-			
-			var len:int = maps.length;
-			var mapEvent:MappingEvent;
-			var i:int;
-			for(i = 0; i < len; i++) {
-				mapEvent = maps[i];
-				if(mapEvent.type == e.type)
-					break;
-			}
-			
-			if(mapEvent.source != null) {
-				var args:Array = [];
-				if(mapEvent.eventArgs) {
-					args.push(e);
-				}
-				
-				if(mapEvent.parameters != null) {
-					var value:Object;
-					var parameter:Parameter;
-					len = mapEvent.parameters.length;
-					for(i = 0; i < len; i++) {
-						parameter = mapEvent.parameters[i];
-						value = getParameterValue(parameter);
-						args.push(value);
-					}
-				}
-				
-				var instance:Object;
-				if(mapEvent.source is String) {
-					var cls:Class = ApplicationDomain.currentDomain.getDefinition(String(mapEvent.source)) as Class;
-					if(cls != null) {
-						instance = new cls();
-					}
-				} else {
-					instance = new mapEvent.source();
-				}
-				
-				if(instance is IContext) {
-					IContext(instance).finder = finder;
-					IContext(instance).factory = factory;
-				}
-				var func:Function = instance[mapEvent.method];
-				if(func != null) {
-					func.apply(null,args);
 				}
 			}
 		}
@@ -242,24 +149,5 @@ package acts.system
 			return null;
 		}
 		
-	}
-}
-
-class MappingEvent {
-	public var step:Array;
-	
-	public var type:String;
-	public var source:Class;
-	public var method:String;
-	public var parameters:Array;
-	public var eventArgs:Boolean;
-	
-	public function MappingEvent(type:String = null, source:Class = null, method:String = null, parameters:Array = null, step:Array = null, eventArgs:Boolean = false) {
-		this.type = type;
-		this.step = step != null ? step : [];
-		this.source = source;
-		this.method = method;
-		this.parameters = parameters;
-		this.eventArgs = eventArgs;
 	}
 }
