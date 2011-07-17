@@ -39,6 +39,7 @@ package acts.system
 	public class System extends ASSystem implements IMXMLObject
 	{	
 		public var objects:Array;
+		public var actions:Array;
 		
 		private var document:Object;
 		

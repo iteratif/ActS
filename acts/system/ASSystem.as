@@ -40,9 +40,7 @@ package acts.system
 	import flash.utils.getTimer;
 
 	public class ASSystem
-	{
-		public var actions:Array;
-		
+	{	
 		protected var _finder:IFinder;
 		protected var _factory:Factory;
 		
