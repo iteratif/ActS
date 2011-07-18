@@ -37,9 +37,13 @@ package acts.system
 	import flash.utils.Dictionary;
 
 	public class ASSystem
-	{	
+	{
+		public var front:Class;
+		
 		protected var _finder:IFinder;
 		protected var _factory:Factory;
+		
+		protected var frontSystem:Object;
 		
 		public function get finder():IFinder {
 			return _finder;
@@ -59,10 +63,6 @@ package acts.system
 			if(registry) {
 				_factory = new ObjectFactory(registry);
 			}
-		}
-		
-		public function getTrigger(expr:String):Object {
-			return finder.getElement(expr);
 		}
 		
 		private var mapActions:Dictionary = new Dictionary();
@@ -118,11 +118,6 @@ package acts.system
 					if(action.event == e.type) {
 						instance = createObject(action);
 						
-						if(instance is IContext) {
-							IContext(instance).finder = finder;
-							IContext(instance).factory = factory;
-						}
-						
 						var func:Function = instance[action.method];
 						if(func != null) {
 							var args:Array = [];
@@ -158,7 +153,21 @@ package acts.system
 		}
 		
 		protected function createObject(action:Action):Object {
-			var instance:Object = new action.source();
+			var instance:Object;
+			
+			var source:Class = action.source;
+			if(!source && front) {
+				if(!frontSystem)
+					frontSystem = new front();
+				instance = frontSystem;
+			} else {
+				instance = new source();
+			}
+			
+			if(instance is IContext) {
+				IContext(instance).finder = finder;
+				IContext(instance).factory = factory;
+			}
 			return instance;
 		}
 		
