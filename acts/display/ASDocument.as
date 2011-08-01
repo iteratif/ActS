@@ -66,8 +66,10 @@ package acts.display
 		}
 		
 		public function getElementByName(name:String):Object {
-			var elt:Object = getElementsByName(name);
-			return elt;
+			var results:Array = getElementsByName(name);
+			if(results)
+				return results[0];
+			return null;
 		}
 		
 		public function getElementsByName(name:String):Array {
@@ -111,63 +113,41 @@ package acts.display
 		}
 		
 		protected function addBehaviors(dispatcher:DisplayObject):void {
-			if(dispatcher.stage) {
-				dispatcher.stage.addEventListener(Event.ADDED_TO_STAGE,addedToStageHandlerEx,true);
-				dispatcher.stage.addEventListener(Event.REMOVED_FROM_STAGE,removedHandler,true);
-			} else {
-				dispatcher.addEventListener(Event.ADDED,addedHandler,true);
-				dispatcher.addEventListener(Event.REMOVED,removedHandler,true);
-				dispatcher.addEventListener(Event.ADDED_TO_STAGE,addedToStageHandler);
-			}
+			dispatcher.addEventListener(Event.ADDED,addedHandlerEx);
+			dispatcher.addEventListener(Event.ADDED_TO_STAGE,addedToStageHandlerEx);
+			dispatcher.addEventListener(Event.REMOVED,removedHandler);
+			dispatcher.addEventListener(Event.REMOVED_FROM_STAGE,removedHandler);
 		}
 		
-		protected function addedToStageHandlerEx(e:Event):void {			
-			var elt:Object = e.target;
-			insertElement(elt);
+		protected function addedHandlerEx(e:Event):void {
+			e.stopImmediatePropagation();
+			insertElement(e.target);
 		}
 		
-		protected function addedToStageHandler(e:Event):void {			
-			var elt:Object = e.target;
-			container.removeEventListener(Event.ADDED,addedHandler,true);
-			container.removeEventListener(Event.REMOVED,removedHandler,true);
-			container.removeEventListener(Event.ADDED_TO_STAGE,addedToStageHandler);
-			
-			insertElement(elt);		
-			
-			elt.stage.addEventListener(Event.ENTER_FRAME,nextFrameHandler);
+		protected function addedToStageHandlerEx(e:Event):void {
+			insertElement(e.target);
 		}
-		
-		protected function nextFrameHandler(e:Event):void {
-			var elt:Object = e.target;
-			elt.removeEventListener(Event.ENTER_FRAME,nextFrameHandler);
-			
-			elt.addEventListener(Event.ADDED_TO_STAGE,addedHandler,true);
-			elt.addEventListener(Event.REMOVED_FROM_STAGE,removedHandler,true);
-		}
-		
-		protected function addedHandler(e:Event):void {	
-			var elt:Object = e.target;
-			insertElement(elt);
-		}	
 		
 		protected function insertElement(elt:Object):void {
 			var className:String = ClassUtil.unqualifiedClassName(elt);
 			
-			// trace("insert",className,elt.name);
+			// trace("insert",elt,className,elt.name,container);
 			
 			var types:Array = typedElements[className];
 			if(!types) {
 				types = new Array();
 				typedElements[className] = types; 
 			}
-			types.push(elt);
+			if(types.indexOf(elt) == -1)
+				types.push(elt);
 			
 			var names:Array = namedElements[elt.name];
 			if(!names) {
 				names = new Array();
 				namedElements[elt.name] = names;
 			}
-			names.push(elt);
+			if(names.indexOf(elt) == -1)
+				names.push(elt);
 			
 			elementAdded.dispatch(elt);
 		}

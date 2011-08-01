@@ -45,6 +45,12 @@ package acts.system
 		
 		protected var frontSystem:Object;
 		
+		private static var _mainSystem:ASSystem;
+		
+		public static function get mainSystem():ASSystem {
+			return _mainSystem;
+		}
+		
 		public function get finder():IFinder {
 			return _finder;
 		}
@@ -55,6 +61,9 @@ package acts.system
 
 		public function ASSystem(dom:ASDocument = null, registry:IRegistry = null)
 		{
+			if(!_mainSystem)
+				_mainSystem = this; 
+			
 			if(dom) {
 				_finder = new ASFinder(dom);
 				dom.elementAdded.add(elementAddedHandler);
@@ -156,18 +165,22 @@ package acts.system
 			var instance:Object;
 			
 			var source:Class = action.source;
-			if(!source && front) {
+			if(!source && mainSystem.front) {
 				if(!frontSystem)
-					frontSystem = new front();
+					frontSystem = new mainSystem.front();
 				instance = frontSystem;
+				if(instance is IContext) {
+					IContext(instance).finder = mainSystem.finder;
+					IContext(instance).factory = mainSystem.factory;
+				}
 			} else {
 				instance = new source();
+				if(instance is IContext) {
+					IContext(instance).finder = finder;
+					IContext(instance).factory = factory;
+				}
 			}
 			
-			if(instance is IContext) {
-				IContext(instance).finder = finder;
-				IContext(instance).factory = factory;
-			}
 			return instance;
 		}
 		

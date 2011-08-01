@@ -43,23 +43,14 @@ package acts.system
 		
 		private var document:Object;
 		
-		private static var _mainSystem:System;
-		
-		public static function get mainSystem():System {
-			return _mainSystem;
-		}
-		
 		public function initialized(document:Object, id:String):void {
 			this.document = document;
+		
+			var dom:ASDocument = new ASDocument(document as DisplayObjectContainer);
+			dom.elementAdded.add(elementAddedHandler);
+			_finder = new ASFinder(dom);
 			
-			if(!mainSystem) {
-				_mainSystem = this;
-				var dom:ASDocument = new ASDocument(document as DisplayObjectContainer);
-				dom.elementAdded.add(elementAddedHandler);
-				_finder = new ASFinder(dom);
-				
-				_factory = new ObjectFactory(new Registry());
-			}
+			_factory = new ObjectFactory(new Registry());		
 
 			var i:int, len:int;
 			if(actions) {
@@ -69,14 +60,14 @@ package acts.system
 					action = actions[i];
 					if(!action.trigger)
 						action.trigger = document;
-					mainSystem.addAction(action);
+					addAction(action);
 				}
 			}
 			
 			if(objects != null) {
 				len = objects.length;
 				for(i = 0; i < len; i++) {
-					mainSystem.factory.registry.addDefinition(objects[i]);
+					factory.registry.addDefinition(objects[i]);
 				}
 			}
 		}
