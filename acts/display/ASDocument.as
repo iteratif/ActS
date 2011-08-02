@@ -113,25 +113,20 @@ package acts.display
 		}
 		
 		protected function addBehaviors(dispatcher:DisplayObject):void {
-			dispatcher.addEventListener(Event.ADDED,addedHandlerEx);
-			dispatcher.addEventListener(Event.ADDED_TO_STAGE,addedToStageHandlerEx);
+			dispatcher.addEventListener(Event.ADDED,addedHandler);
 			dispatcher.addEventListener(Event.REMOVED,removedHandler);
-			dispatcher.addEventListener(Event.REMOVED_FROM_STAGE,removedHandler);
 		}
 		
-		protected function addedHandlerEx(e:Event):void {
-			e.stopImmediatePropagation();
-			insertElement(e.target);
-		}
-		
-		protected function addedToStageHandlerEx(e:Event):void {
+		protected function addedHandler(e:Event):void {
+			if(e.target != container)
+				e.stopImmediatePropagation();
 			insertElement(e.target);
 		}
 		
 		protected function insertElement(elt:Object):void {
 			var className:String = ClassUtil.unqualifiedClassName(elt);
 			
-			// trace("insert",elt,className,elt.name,container);
+			// trace("insert",elt,container);
 			
 			var types:Array = typedElements[className];
 			if(!types) {
