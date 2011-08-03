@@ -42,5 +42,6 @@
 	<!-- acts.factories.registry -->
 	<component id="Registry" class="acts.factories.registry.Registry"/>
 	<component id="Definition" class="acts.factories.registry.Definition"/>
+	<component id="Property" class="acts.factories.registry.Property"/>
 	
 </componentPackage>
