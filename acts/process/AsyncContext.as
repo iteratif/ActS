@@ -2,19 +2,19 @@ package acts.process
 {
 	import acts.core.IContext;
 	import acts.display.IFinder;
-	import acts.factories.Factory;
+	import acts.factories.IFactory;
 	
 	public class AsyncContext extends Async implements IContext
 	{
-		private var _factory:Factory;
+		private var _factory:IFactory;
 		private var _finder:IFinder;
 		
-		public function get factory():Factory
+		public function get factory():IFactory
 		{
 			return _factory;
 		}
 		
-		public function set factory(value:Factory):void
+		public function set factory(value:IFactory):void
 		{
 			_factory = value;
 		}

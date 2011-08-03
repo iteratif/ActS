@@ -27,7 +27,7 @@ package acts.factories
 	
 	import flash.utils.Dictionary;
 
-	public class Factory
+	public class Factory implements IFactory
 	{
 		private var _registry:IRegistry;
 		protected var instances:Dictionary;
@@ -43,6 +43,9 @@ package acts.factories
 		}
 		
 		public function getObject(uid:String):Object {
+			if(!registry.hasDefinition(uid))
+				return null;
+			
 			var definition:Definition = registry.getDefinition(uid);
 			
 			var instance:Object = instances[uid];

@@ -24,7 +24,7 @@ package acts.core
 {
 	import acts.display.IFinder;
 	import acts.events.StateEvent;
-	import acts.factories.Factory;
+	import acts.factories.IFactory;
 	
 	import flash.events.EventDispatcher;
 	import flash.events.TimerEvent;
@@ -39,18 +39,18 @@ package acts.core
 		private var _lastState:State;
 
 		private var _finder:IFinder;
-		private var _factory:Factory;
+		private var _factory:IFactory;
 		
 		public function get lastState():State {
 			return _lastState;
 		}
 
-		public function get factory():Factory
+		public function get factory():IFactory
 		{
 			return _factory;
 		}
 
-		public function set factory(value:Factory):void
+		public function set factory(value:IFactory):void
 		{
 			_factory = value;
 		}
