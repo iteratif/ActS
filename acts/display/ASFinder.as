@@ -37,6 +37,10 @@ package acts.display
 	
 		public function ASFinder(dom:ASDocument)
 		{
+			if(!dom) {
+				throw new ArgumentError();
+			}
+			
 			this.dom = dom;
 		}
 		

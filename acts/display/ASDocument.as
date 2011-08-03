@@ -49,6 +49,9 @@ package acts.display
 		
 		public function ASDocument(container:DisplayObjectContainer)
 		{
+			if(!container)
+				throw new ArgumentError();
+			
 			elementAdded = new Signal(DisplayObject);
 			this.container = container;
 			
