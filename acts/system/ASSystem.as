@@ -27,9 +27,10 @@ package acts.system
 	import acts.display.ASFinder;
 	import acts.display.Expression;
 	import acts.display.IFinder;
-	import acts.factories.Factory;
+	import acts.factories.IFactory;
 	import acts.factories.ObjectFactory;
-	import acts.factories.registry.IRegistry;
+	import acts.factories.registry.Definition;
+	import acts.factories.registry.Registry;
 	import acts.utils.ClassUtil;
 	
 	import flash.display.DisplayObject;
@@ -41,11 +42,11 @@ package acts.system
 		public var front:Class;
 		
 		protected var _finder:IFinder;
-		protected var _factory:Factory;
+		protected var _factory:IFactory;
 		
 		protected var frontSystem:Object;
 		
-		private static var _mainSystem:ASSystem;
+		internal static var _mainSystem:ASSystem;
 		
 		public static function get mainSystem():ASSystem {
 			return _mainSystem;
@@ -55,11 +56,11 @@ package acts.system
 			return _finder;
 		}
 		
-		public function get factory():Factory {
+		public function get factory():IFactory {
 			return _factory;
 		}
 
-		public function ASSystem(dom:ASDocument = null, registry:IRegistry = null)
+		public function ASSystem(dom:ASDocument = null, factory:IFactory = null)
 		{
 			if(!_mainSystem)
 				_mainSystem = this; 
@@ -69,8 +70,10 @@ package acts.system
 				dom.elementAdded.add(elementAddedHandler);
 			}
 			
-			if(registry) {
-				_factory = new ObjectFactory(registry);
+			if(factory) {
+				_factory = factory;
+			} else {
+				_factory = new ObjectFactory(new Registry());
 			}
 		}
 		
@@ -92,6 +95,10 @@ package acts.system
 				mapActions[trigger] = arr;
 			}
 			arr.push(action);
+		}
+		
+		public function addDefinition(definition:Definition):void {
+			_mainSystem.factory.registry.addDefinition(definition);
 		}
 		
 		protected function elementAddedHandler(displayObject:DisplayObject):void {
@@ -177,7 +184,7 @@ package acts.system
 				instance = new source();
 				if(instance is IContext) {
 					IContext(instance).finder = finder;
-					IContext(instance).factory = factory;
+					IContext(instance).factory = mainSystem.factory;
 				}
 			}
 			

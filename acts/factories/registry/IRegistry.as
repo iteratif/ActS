@@ -24,6 +24,8 @@ package acts.factories.registry
 {
 	public interface IRegistry
 	{
+		function get numDefinitions():int;
+		function hasDefinition(uid:String):Boolean;
 		function getDefinition(uid:String):Definition;
 		function addDefinition(definition:Definition):void;
 	}

@@ -28,23 +28,34 @@ package acts.factories.registry
 	{
 		private var definitions:Dictionary;
 		
+		private var _numDefinitions:int = 0;
+		public function get numDefinitions():int {
+			return _numDefinitions;
+		}
+		
 		public function Registry()
 		{
 			definitions = new Dictionary();
 		}
 		
+		public function hasDefinition(uid:String):Boolean {
+			return definitions[uid] != null;
+		}
+		
 		public function getDefinition(uid:String):Definition
 		{
-			if(!definitions[uid]) {
-				throw new ArgumentError("not definition with uid:" + uid + " exists");
-			}
-			
-			return definitions[uid];
+			if(definitions[uid])
+				return definitions[uid];
+			return null;
 		}
 		
 		public function addDefinition(definition:Definition):void {
+			if(!definition)
+				throw new ArgumentError("definition reference is null",5100);
+			
 			if(!definitions[definition.uid]) {
 				definitions[definition.uid] = definition;
+				_numDefinitions++;
 			}
 		}
 	}

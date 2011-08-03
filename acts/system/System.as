@@ -24,6 +24,7 @@ package acts.system
 {
 	import acts.display.ASDocument;
 	import acts.display.ASFinder;
+	import acts.factories.IFactory;
 	import acts.factories.ObjectFactory;
 	import acts.factories.registry.Registry;
 	
@@ -43,14 +44,21 @@ package acts.system
 		
 		private var document:Object;
 		
+		public function System(document:DisplayObjectContainer = null, factory:IFactory = null):void {
+			var dom:ASDocument = null;
+			if(document) {
+				this.document = document;
+				dom = new ASDocument(document);
+			}
+			super(dom,factory);
+		}
+		
 		public function initialized(document:Object, id:String):void {
 			this.document = document;
 		
 			var dom:ASDocument = new ASDocument(document as DisplayObjectContainer);
 			dom.elementAdded.add(elementAddedHandler);
 			_finder = new ASFinder(dom);
-			
-			_factory = new ObjectFactory(new Registry());		
 
 			var i:int, len:int;
 			if(actions) {
@@ -67,7 +75,7 @@ package acts.system
 			if(objects != null) {
 				len = objects.length;
 				for(i = 0; i < len; i++) {
-					factory.registry.addDefinition(objects[i]);
+					addDefinition(objects[i]);
 				}
 			}
 		}
