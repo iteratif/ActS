@@ -85,8 +85,7 @@ package acts.system
 				var expr:Expression = finder.parseExpression(trigger.toString());
 				trigger = (expr.name != null) ? expr.name : expr.type;
 			} else if(trigger is DisplayObject) {
-				DisplayObject(trigger).addEventListener(action.event,firedEventHandler);
-				trigger = DisplayObject(trigger).name;	
+				DisplayObject(trigger).addEventListener(action.event,firedEventHandler);	
 			}
 			
 			var arr:Array = mapActions[trigger];
@@ -160,7 +159,12 @@ package acts.system
 		}
 		
 		protected function getActions(displayObject:DisplayObject):Array {
-			var actions:Array = mapActions[displayObject.name];
+			
+			var actions:Array = mapActions[displayObject];
+			if(!actions) {
+				actions = mapActions[displayObject.name];
+			}
+			
 			if(!actions) {
 				var type:String = ClassUtil.unqualifiedClassName(displayObject);
 				actions = mapActions[type];
