@@ -22,17 +22,20 @@ Contributor(s) :
 */
 package acts.factories.registry
 {
+	[DefaultProperty("properties")]
 	public class Definition
 	{
 		public var uid:String;
 		public var type:Class;
 		public var singleton:Boolean;
+		public var properties:Array;
 		
 		public function Definition(uid:String = null, type:Class = null, singleton:Boolean = true)
 		{
 			this.uid = uid;
 			this.type = type;
 			this.singleton = singleton;
+			properties = [];
 		}
 	}
 }

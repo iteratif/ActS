@@ -24,6 +24,7 @@ package acts.factories
 {
 	import acts.factories.registry.Definition;
 	import acts.factories.registry.IRegistry;
+	import acts.factories.registry.Property;
 	
 	import flash.utils.Dictionary;
 
@@ -37,8 +38,19 @@ package acts.factories
 		public override function createObject(definition:Definition):Object {
 			var type:Class = definition.type;
 			var instance:Object = new type();
-			
+			setProperties(instance,definition.properties);
 			return instance;
+		}
+		
+		protected function setProperties(instance:Object, properties:Array):void {
+			var len:int = properties.length;
+			var property:Property;
+			for(var i:int = 0; i < len; i++) {
+				property = properties[i];
+				if(instance.hasOwnProperty(property.name) && property.ref) {
+					instance[property.name] = getObject(property.ref);
+				}
+			}
 		}
 	}
 }
