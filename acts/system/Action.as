@@ -30,6 +30,7 @@ package acts.system
 		public var source:Class;
 		public var method:String;
 		public var eventArgs:Boolean;
+		public var ref:String
 		
 		public var parameters:Array;
 		

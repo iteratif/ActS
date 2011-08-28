@@ -42,19 +42,16 @@ package acts.system
 		public var objects:Array;
 		public var actions:Array;
 		
-		private var document:Object;
-		
 		public function System(document:DisplayObjectContainer = null, factory:IFactory = null):void {
 			var dom:ASDocument = null;
 			if(document) {
-				this.document = document;
 				dom = new ASDocument(document);
 			}
 			super(dom,factory);
 		}
 		
 		public function initialized(document:Object, id:String):void {
-			this.document = document;
+			_document = document;
 		
 			var dom:ASDocument = new ASDocument(document as DisplayObjectContainer);
 			dom.elementAdded.add(elementAddedHandler);
