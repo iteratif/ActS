@@ -188,6 +188,7 @@ package acts.system
 			if(instance is IContext) {
 				IContext(instance).finder = finder;
 				IContext(instance).factory = mainSystem.factory;
+				IContext(instance).document = document;
 			}
 			
 			return instance;

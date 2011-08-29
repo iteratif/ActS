@@ -23,14 +23,25 @@ Contributor(s) :
 package acts.core
 {
 	import acts.display.IFinder;
+	import acts.display.IViewContext;
 	import acts.factories.IFactory;
 	import acts.factories.IFactoryContext;
-	import acts.display.IViewContext;
 	
 	public class Context implements IContext
 	{
 		private var _finder:IFinder;
 		private var _factory:IFactory;
+		private var _document:Object;
+
+		public function get document():Object
+		{
+			return _document;
+		}
+
+		public function set document(value:Object):void
+		{
+			_document = value;
+		}
 
 		public function get factory():IFactory
 		{

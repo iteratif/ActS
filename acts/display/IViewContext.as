@@ -27,5 +27,7 @@ package acts.display
 	{
 		function get finder():IFinder;
 		function set finder(value:IFinder):void;
+		function get document():Object;
+		function set document(value:Object):void;
 	}
 }

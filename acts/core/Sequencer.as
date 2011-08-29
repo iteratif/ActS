@@ -41,6 +41,18 @@ package acts.core
 		private var _finder:IFinder;
 		private var _factory:IFactory;
 		
+		private var _document:Object;
+		
+		public function get document():Object
+		{
+			return _document;
+		}
+		
+		public function set document(value:Object):void
+		{
+			_document = value;
+		}
+		
 		public function get lastState():State {
 			return _lastState;
 		}
