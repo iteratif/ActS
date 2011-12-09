@@ -25,8 +25,8 @@ package acts.system
 	import acts.core.IContext;
 	import acts.display.ASDocument;
 	import acts.display.ASFinder;
-	import acts.display.Expression;
 	import acts.display.IFinder;
+	import acts.display.utils.ContextualSelector;
 	import acts.factories.IFactory;
 	import acts.factories.ObjectFactory;
 	import acts.factories.registry.Definition;
@@ -85,7 +85,7 @@ package acts.system
 			var trigger:Object = action.trigger;
 			
 			if(trigger is String) {
-				var expr:Expression = finder.parseExpression(trigger.toString());
+				var expr:ContextualSelector = finder.parsePattern(trigger.toString());
 				trigger = (expr.name != null) ? expr.name : expr.type;
 			} else if(trigger is DisplayObject) {
 				DisplayObject(trigger).addEventListener(action.event,firedEventHandler);	
@@ -109,13 +109,13 @@ package acts.system
 			if(actions) {
 				var action:Action;
 				var len:int = actions.length;
-				var expr:Expression;
+				var selector:ContextualSelector;
 				var matched:Boolean = true;
 				for(var i:int = 0; i < len; i++) {
 					action = actions[i];
 					if(action.trigger is String) { 
-						expr = finder.parseExpression(action.trigger.toString());
-						matched = finder.document.match(displayObject,expr.step);
+						selector = finder.parsePattern(action.trigger.toString());
+						matched = finder.document.match(displayObject,selector.selectors);
 					}
 					
 					if(matched)

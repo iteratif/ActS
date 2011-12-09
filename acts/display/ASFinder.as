@@ -22,6 +22,9 @@ Contributor(s) :
 */
 package acts.display
 {
+	import acts.display.utils.ContextualSelector;
+	import acts.display.utils.Selector;
+	
 	import flash.display.DisplayObject;
 	import flash.display.InteractiveObject;
 	import flash.events.Event;
@@ -52,23 +55,23 @@ package acts.display
 			return element;
 		}
 		
-		public function getElements(selector:String):Array {
+		public function getElements(pattern:String):Array {
 			var elements:Array = [];
-			var expr:Expression = parseExpression(selector);
+			var context:ContextualSelector = parsePattern(pattern);
 			
-			if(expr.name != null) {
-				elements = dom.getElementsByName(expr.name);
+			if(context.name != null) {
+				elements = dom.getElementsByName(context.name);
 			} else {
-				elements = dom.getElementsByType(expr.type);
+				elements = dom.getElementsByType(context.type);
 			}
 			
-			if(elements != null && expr.step.length > 0) {
+			if(elements != null && context.selectors.length > 1) {
 				var l:int = elements.length;
 				var element:Object;
 				var elts:Array = [];
 				for(var i:int = 0; i < l; i++) {
 					element = elements[i];
-					if(dom.match(element,expr.step)) {
+					if(dom.match(element,context.selectors)) {
 						elts.push(element);
 					}
 				}
@@ -77,20 +80,35 @@ package acts.display
 			return elements;
 		}
 		
-		public function parseExpression(expr:String):Expression {
-			var step:Array = expr.split(" ");
-			var type:String = step.pop();
-			var indexS:int = type.indexOf("#");
-			var name:String;
-			if(indexS > 0) {
-				name = type.substring(indexS+1);
-				type = type.substring(0,indexS);
-				step.push(type);
-			} else if(indexS == 0) {
-				name = type.substring(1);
-				type = null;
+		public function parsePattern(pattern:String):ContextualSelector {
+			var steps:Array = pattern.split(" ");
+			var len:int = steps.length;
+			var context:ContextualSelector = new ContextualSelector(len - 1);
+			var lastIndex:int = len - 1;
+			
+			for(var i:int = 0; i < lastIndex; i++) {
+				context.selectors[i] = parseSelector(steps[i]);
 			}
-			return new Expression(name,type,step);
+			
+			var s:Selector = parseSelector(steps[lastIndex]);
+			context.name = s.name;
+			context.type = s.type;
+			
+			return context;
+		}
+		
+		private function parseSelector(pattern:String):Selector {
+			var s:Selector = new Selector();
+			s.type = pattern;
+			var index:int = pattern.indexOf("#");
+			if(index > 0) {
+				s.name = pattern.substring(index+1);
+				s.type = pattern.substring(0,index);
+			} else if(index == 0) {
+				s.name = pattern.substring(1);
+				s.type = null;
+			}
+			return s;
 		}
 	}
 }

@@ -22,6 +22,7 @@ Contributor(s) :
 */
 package acts.display
 {
+	import acts.display.utils.Selector;
 	import acts.utils.ClassUtil;
 	
 	import flash.display.DisplayObject;
@@ -81,8 +82,8 @@ package acts.display
 			return null;
 		}
 		
-		public function match(instance:Object, selectors:Array):Boolean {
-			var selector:String;
+		public function match(instance:Object, selectors:Vector.<Selector>):Boolean {
+			var selector:Selector;
 			var o:Object = instance;
 			var checked:Boolean;
 			var count:int = 0;
@@ -93,7 +94,17 @@ package acts.display
 				selector = selectors[index--];
 				
 				while(o != null && !checked) {
-					if(ClassUtil.unqualifiedClassName(o) == selector) {
+					if(selector.name) {
+						if(selector.type) {
+							if(ClassUtil.unqualifiedClassName(o) == selector.type && o.name == selector.name) {
+								count++;
+								checked = true;
+							}
+						} else if(o.name == selector.name) {
+							count++;
+							checked = true;
+						}
+					} else if(ClassUtil.unqualifiedClassName(o) == selector.type) {
 						count++;
 						checked = true;
 					}
