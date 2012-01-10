@@ -75,5 +75,13 @@ package acts.core
 				return _finder.getElement(selector);
 			}
 		}
+		
+		public function finds(selector:String):Array {
+			return _finder.getElements(selector);
+		}
+		
+		public function getObject(uid:String):Object {
+			return _factory.getObject(uid);
+		}
 	}
 }

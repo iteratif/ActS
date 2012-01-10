@@ -80,6 +80,14 @@ package acts.process
 				return _finder.getElement(selector);
 			}
 		}
+		
+		public function finds(selector:String):Array {
+			return _finder.getElements(selector);
+		}
+		
+		public function getObject(uid:String):Object {
+			return _factory.getObject(uid);
+		}
 
 		public function get currentTask():Task {
 			return _currentTask;
