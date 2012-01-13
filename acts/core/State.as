@@ -122,7 +122,7 @@ package acts.core
 					trigger = sequencer.finder.getElement(trigger.toString());
 				}
 				
-				var signal:Signal = new NativeMappedSignal(trigger,e.type,null,Action).mapTo(e.action);
+				var signal:NativeMappedSignal = new NativeMappedSignal(trigger,e.type,null,Action).mapTo(e.action);
 				signal.add(executeAction);
 				signals.push(signal);				
 			}
