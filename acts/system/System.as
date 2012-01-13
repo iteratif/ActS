@@ -37,11 +37,43 @@ package acts.system
 	import mx.events.FlexEvent;
 	
 	[DefaultProperty("actions")]
+	/**
+	 * the System class is core of ActS architecture and contains the logic for connect the views on the behaviors.
+	 * The behaviors are classes that implement the action methods.
+	 * 
+	 * The system class provides an action collection for defined the relation between the commands and the methods action.
+	 * 
+	 * @mxml
+	 * 
+	 * Example :
+	 * 
+	 * <pre>
+	 * 		&lt;s:Declarations&gt;
+	 * 			&lt;System&gt;
+	 * 				&lt;Action trigger="#btn" event="click" source="managers.AppManager" method="execute" /&gt;
+	 * 				&lt;Action trigger="#txt" event="enter" source="managers.AppManager" method="search" /&gt;
+	 * 			&lt;/System&gt;
+	 * 		&lt;/s:Declarations&gt;
+	 * </pre>
+	 * 
+	 * @see acts.system.Action
+	 */
 	public class System extends ASSystem implements IMXMLObject
 	{	
+		/**
+		 * The array of definition objects for the objects factory.
+		 */
 		public var objects:Array;
+		
+		/**
+		 * The array of actions for this system.
+		 */
 		public var actions:Array;
 		
+		/**
+		 * Constructor.
+		 * 
+		 */
 		public function System(document:DisplayObjectContainer = null, factory:IFactory = null):void {
 			var dom:ASDocument = null;
 			if(document) {
@@ -50,6 +82,11 @@ package acts.system
 			super(dom,factory);
 		}
 		
+		/**
+		 * 
+		 * @copy mx.core.IMXMLObject
+		 * 
+		 */
 		public function initialized(document:Object, id:String):void {
 			_document = document;
 		

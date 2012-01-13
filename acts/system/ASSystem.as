@@ -37,6 +37,15 @@ package acts.system
 	import flash.events.Event;
 	import flash.utils.Dictionary;
 
+	/**
+	 * the ASSystem class is the class base that implement the logic for connecting the views and the action classes.
+	 * Inside the ASSystem uses the ASDocument and ASFinder class for make the connections.
+	 * 
+	 * @see acts.system.System
+	 * @see acts.display.ASDocument
+	 * @see acts.display.ASFinder
+	 * 
+	 */
 	public class ASSystem
 	{
 		protected var _finder:IFinder;
@@ -44,24 +53,44 @@ package acts.system
 		
 		protected var _document:Object;
 		
+		/**
+		 * Specify the component that uses this ASSystem class.  
+		 * 
+		 */
 		public function get document():Object {
 			return _document;
 		}
 		
 		internal static var _mainSystem:ASSystem;
 		
+		/**
+		 * A reference to the top-level System.
+		 * 
+		 */
 		public static function get mainSystem():ASSystem {
 			return _mainSystem;
 		}
 		
+		/**
+		 * The ASSystem class uses the ASFinder object which finds the view elements.
+		 * 
+		 */
 		public function get finder():IFinder {
 			return _finder;
 		}
 		
+		/**
+		 * The lightweight container for the business model.
+		 * 
+		 */		
 		public function get factory():IFactory {
 			return _factory;
 		}
 
+		/**
+		 * Constructor.
+		 * 
+		 */
 		public function ASSystem(dom:ASDocument = null, factory:IFactory = null)
 		{			
 			if(!_mainSystem)
@@ -81,6 +110,11 @@ package acts.system
 		}
 		
 		private var mapActions:Dictionary = new Dictionary();
+		
+		/**
+		 *  Adds a action object to this system
+		 * 
+		 */
 		public function addAction(action:Action):void {
 			var trigger:Object = action.trigger;
 			
@@ -99,10 +133,19 @@ package acts.system
 			arr.push(action);
 		}
 		
+		/**
+		 *  Adds a definition to the objects factory
+		 * 
+		 */
 		public function addDefinition(definition:Definition):void {
 			_mainSystem.factory.registry.addDefinition(definition);
 		}
 		
+		/**
+		 *  
+		 * @private
+		 * 
+		 */
 		protected function elementAddedHandler(displayObject:DisplayObject):void {
 			var actions:Array = getActions(displayObject);
 			
@@ -124,6 +167,11 @@ package acts.system
 			}
 		}
 		
+		/**
+		 *  
+		 * @private
+		 * 
+		 */
 		protected function firedEventHandler(e:Event):void {
 			var displayObject:DisplayObject = e.currentTarget as DisplayObject;
 			var actions:Array = getActions(displayObject);
@@ -161,6 +209,11 @@ package acts.system
 			}
 		}
 		
+		/**
+		 *  
+		 * @private
+		 * 
+		 */
 		protected function getActions(displayObject:DisplayObject):Array {
 			
 			var actions:Array = mapActions[displayObject];
@@ -175,6 +228,11 @@ package acts.system
 			return actions;
 		}
 		
+		/**
+		 *  
+		 * @private
+		 * 
+		 */
 		protected function createObject(action:Action):Object {
 			var instance:Object;
 			

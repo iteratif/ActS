@@ -23,17 +23,49 @@ Contributor(s) :
 package acts.system
 {
 	[DefaultProperty("parameters")]
+	/**
+	 *  The Action class defines the relation between the component and the action method.
+	 * 
+	 */
 	public class Action
 	{
+		/**
+		 * The trigger event.
+		 */
 		public var event:String;
+		/**
+		 * The search expression. 
+		 * 
+		 * @see acts.display.ASFinder
+		 */
 		public var trigger:Object;
+		/**
+		 * The reference of actions class.
+		 */
 		public var source:Class;
+		/**
+		 * The reference of action method. 
+		 */
 		public var method:String;
+		/**
+		 * Indicates that the action method receives the event parameter.
+		 */		
 		public var eventArgs:Boolean;
+		/**
+		 *  The uid of actions class into the objects factory.
+		 */
 		public var ref:String
 		
+		/**
+		 * A array of parameters 
+		 */
 		public var parameters:Array;
 		
+		/**
+		 * 
+		 * Constructor.
+		 * 
+		 */
 		public function Action(trigger:Object = null, event:String = null, source:Class = null, method:String = null, eventArgs:Boolean = false)
 		{
 			this.trigger = trigger;

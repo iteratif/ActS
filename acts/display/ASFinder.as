@@ -30,14 +30,27 @@ package acts.display
 	import flash.events.Event;
 	import flash.utils.getQualifiedClassName;
 
+	/**
+	 * The ASFinder class allows to find one or many components since a search expression.
+	 * 
+	 */
 	public class ASFinder implements IFinder
 	{
 		private var dom:ASDocument;
 		
+		/**
+		 * Specify the component that uses this ASFinder class.  
+		 * 
+		 * @see acts.display.ASDocument
+		 */
 		public function get document():ASDocument {
 			return dom;
 		}
 	
+		/**
+		 * Constructor.
+		 * 
+		 */
 		public function ASFinder(dom:ASDocument)
 		{
 			if(!dom) {
@@ -47,6 +60,10 @@ package acts.display
 			this.dom = dom;
 		}
 		
+		/**
+		 *  Returns the visual element at the search expression.
+		 * 
+		 */
 		public function getElement(selector:String):Object {
 			var element:Object;
 			var elements:Array = getElements(selector);
@@ -55,6 +72,10 @@ package acts.display
 			return element;
 		}
 		
+		/**
+		 * Returns the visual elements at the search expression.
+		 * 
+		 */
 		public function getElements(pattern:String):Array {
 			var elements:Array = [];
 			var context:ContextualSelector = parsePattern(pattern);
@@ -80,6 +101,10 @@ package acts.display
 			return elements;
 		}
 		
+		/**
+		 * Parses a search expression into the ContextualSelector class
+		 * @private
+		 */
 		public function parsePattern(pattern:String):ContextualSelector {
 			var steps:Array = pattern.split(" ");
 			var len:int = steps.length;
