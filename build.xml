@@ -4,17 +4,22 @@
 	<fail unless="env.FLEX_HOME" message="FLEX_HOME needs to be defined as an environment variable or in the Ant build." />
 	<property name="FLEX_HOME" value="${env.FLEX_HOME}" />
 	<property name="project.name" value="acts" />
+	<property name="project.version" value="0.9.7"/>
+
 	<property name="output.dir" value="../bin" />
+	<property name="asdoc.dir" value="../doc" />
 	
 	<taskdef resource="flexTasks.tasks" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
 	
 	<target name="clean">
 		<delete dir="${output.dir}" />
+		<delete dir="${asdoc.dir}" />
 		<mkdir dir="${output.dir}"/>
+		<mkdir dir="${asdoc.dir}"/>
 	</target>
 	
-	<target name="acts" depends="clean">
-		<compc output="${output.dir}/${project.name}.swc" fork="true">
+	<target name="acts" depends="clean,doc">
+		<compc output="${output.dir}/${project.name}.${project.version}.swc" fork="true">
 			<namespace uri="http://www.iteratif.fr/acts" manifest="${basedir}/manifest.xml" />
 			<include-namespaces uri="http://www.iteratif.fr/acts" />
 			<source-path path-element="${basedir}" />
@@ -23,5 +28,15 @@
 			</external-library-path>
 			<include-file name="design.xml" path="${basedir}/design.xml" />
 		</compc>
+	</target>
+	<target name="doc">
+		<asdoc output="${asdoc.dir}" lenient="true" failonerror="true">
+			<compiler.source-path path-element="${basedir}" />
+			<doc-namespaces uri="http://www.iteratif.fr/acts" />
+			<namespace uri="http://www.iteratif.fr/acts" manifest="${basedir}/manifest.xml" />
+			<external-library-path file="${FLEX_HOME}/frameworks/libs/*.swc" />
+			<external-library-path file="${FLEX_HOME}/frameworks/libs/player/10.2/*.swc" />
+			<external-library-path file="${basedir}/libs/as3-signals-v0.8.swc" />
+		</asdoc>
 	</target>
 </project>
