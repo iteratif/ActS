@@ -43,13 +43,12 @@ package acts.factories
 		}
 		
 		public function getObject(uid:String):Object {
-			if(!registry.hasDefinition(uid))
-				return null;
-			
-			var definition:Definition = registry.getDefinition(uid);
+			/*if(!registry.hasDefinition(uid))
+				return null;*/
 			
 			var instance:Object = instances[uid];
 			if(!instance) {
+				var definition:Definition = registry.getDefinition(uid);
 				instance = createObject(definition);
 				if(definition.singleton) {
 					instances[definition.uid] = instance;
@@ -57,6 +56,10 @@ package acts.factories
 			}
 			
 			return instance;
+		}
+		
+		public function setObject(uid:String, value:Object):void {
+			instances[uid] = value;
 		}
 		
 		public function createObject(definition:Definition):Object {

@@ -24,11 +24,13 @@ package acts.core
 {
 	import acts.display.IViewContext;
 	import acts.factories.IFactoryContext;
+	import acts.system.ASSystem;
 	
 	public interface IContext extends IFactoryContext, IViewContext
 	{
 		function find(selector:String):Object;
 		function finds(selector:String):Array;
 		function getObject(uid:String):Object;
+		function setObject(uid:String, value:Object):void;
 	}
 }

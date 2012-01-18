@@ -29,6 +29,7 @@ package acts.factories
 	{
 		function get registry():IRegistry;
 		function getObject(uid:String):Object;
+		function setObject(uid:String, value:Object):void;
 		// Remove dependency at Definition
 		function createObject(definition:Definition):Object;
 	}

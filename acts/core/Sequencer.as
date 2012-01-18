@@ -96,6 +96,10 @@ package acts.core
 		public function getObject(uid:String):Object {
 			return _factory.getObject(uid);
 		}
+		
+		public function setObject(uid:String, value:Object):void {
+			return _factory.setObject(uid,value);
+		}
 
 		public function get currentState():State
 		{
