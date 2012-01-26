@@ -20,8 +20,7 @@ the Initial Developer. All Rights Reserved.
 Contributor(s) :
 
 */
-package acts.system
-{
+package acts.system {
 	import acts.core.IContext;
 	import acts.display.ASDocument;
 	import acts.display.ASFinder;
@@ -36,6 +35,7 @@ package acts.system
 	import flash.display.DisplayObject;
 	import flash.events.Event;
 	import flash.utils.Dictionary;
+	import acts.validations.Rule;
 
 	/**
 	 * the ASSystem class is the class base that implement the logic for connecting the views and the action classes.
@@ -46,8 +46,7 @@ package acts.system
 	 * @see acts.display.ASFinder
 	 * 
 	 */
-	public class ASSystem
-	{
+	public class ASSystem {
 		protected var _finder:IFinder;
 		protected var _factory:IFactory;
 		
@@ -91,8 +90,7 @@ package acts.system
 		 * Constructor.
 		 * 
 		 */
-		public function ASSystem(dom:ASDocument = null, factory:IFactory = null)
-		{			
+		public function ASSystem(dom:ASDocument = null, factory:IFactory = null) {			
 			if(!_mainSystem)
 				_mainSystem = this; 
 			

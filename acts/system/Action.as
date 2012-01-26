@@ -57,7 +57,7 @@ package acts.system
 		public var ref:String
 		
 		/**
-		 * A array of parameters 
+		 * A array of parameters.
 		 */
 		public var parameters:Array;
 		

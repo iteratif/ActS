@@ -66,7 +66,7 @@ package acts.display
 		public function getElementsByType(typeName:String):Array {
 			if(typedElements[typeName])
 				return typedElements[typeName].slice();
-			return null;
+			return [];
 		}
 		
 		public function getElementByName(name:String):Object {
@@ -79,7 +79,7 @@ package acts.display
 		public function getElementsByName(name:String):Array {
 			if(namedElements[name])
 				return namedElements[name].slice();
-			return null;
+			return [];
 		}
 		
 		public function match(instance:Object, selectors:Vector.<Selector>):Boolean {
