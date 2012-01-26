@@ -24,19 +24,13 @@ package acts.system
 {
 	import acts.display.ASDocument;
 	import acts.display.ASFinder;
-	import acts.factories.IFactory;
-	import acts.factories.ObjectFactory;
-	import acts.factories.registry.Registry;
+	import acts.factories.IFactoryBase;
 	
-	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
-	import flash.events.Event;
-	import flash.utils.Dictionary;
 	
 	import mx.core.IMXMLObject;
-	import mx.events.FlexEvent;
 	
-	[DefaultProperty("actions")]
+	[DefaultProperty("plugins")]
 	/**
 	 * the System class is core of ActS architecture and contains the logic for connect the views on the behaviors.
 	 * The behaviors are classes that implement the action methods.
@@ -70,16 +64,18 @@ package acts.system
 		 */
 		public var actions:Array;
 		
+		[ArrayElementType("acts.system.IPlugin")]
+		public var plugins:Array;
 		/**
 		 * Constructor.
 		 * 
 		 */
-		public function System(document:DisplayObjectContainer = null, factory:IFactory = null):void {
+		public function System(document:DisplayObjectContainer = null):void {
 			var dom:ASDocument = null;
 			if(document) {
 				dom = new ASDocument(document);
 			}
-			super(dom,factory);
+			super(dom);
 		}
 		
 		/**
@@ -90,26 +86,15 @@ package acts.system
 		public function initialized(document:Object, id:String):void {
 			_document = document;
 		
-			var dom:ASDocument = new ASDocument(document as DisplayObjectContainer);
-			dom.elementAdded.add(elementAddedHandler);
-			_finder = new ASFinder(dom);
+			_dom = new ASDocument(document as DisplayObjectContainer);
+			_finder = new ASFinder(_dom);
 
 			var i:int, len:int;
-			if(actions) {
-				len = actions.length;
-				var action:acts.system.Action;
+			if(plugins) {
+				len = plugins.length;
+				var plugin:IPlugin;
 				for(i = 0; i < len; i++) {
-					action = actions[i];
-					if(!action.trigger)
-						action.trigger = document;
-					addAction(action);
-				}
-			}
-			
-			if(objects != null) {
-				len = objects.length;
-				for(i = 0; i < len; i++) {
-					addDefinition(objects[i]);
+					registryAndStart(plugins[i]);
 				}
 			}
 		}

@@ -20,13 +20,18 @@ the Initial Developer. All Rights Reserved.
 Contributor(s) :
 
 */
-package acts.process
+package acts.handlers
 {
-	public class FinalTask extends Task
+	public class Parameter
 	{
-		public function FinalTask()
+		public var target:String;
+		public var property:String;
+		public var value:Object;
+		
+		public function Parameter(target:String = null, property:String = null)
 		{
-			super();
+			this.target = target;
+			this.property = property;
 		}
 	}
 }

@@ -20,33 +20,17 @@ the Initial Developer. All Rights Reserved.
 Contributor(s) :
 
 */
-package acts.core
+package acts.factories
 {
-	public class Action implements IExecutable
+	import acts.factories.registry.Definition;
+	import acts.factories.registry.IRegistry;
+
+	public interface IFactoryBase
 	{
-		public var source:Class;
-		public var methodName:String;
-		
-		public function Action(source:Class = null, methodName:String = null)
-		{
-			this.source = source;
-			this.methodName = methodName;
-		}
-		
-		public function execute(context:IContext,...args):void {
-			if(source != null) {
-				// TODO get class from ApplicationDomain
-				var instance:Object = new source();
-				if(instance.hasOwnProperty(methodName)) {
-					if(instance is IContext) {
-						IContext(instance).finder = context.finder;
-						IContext(instance).factory = context.factory;
-					}
-					
-					var f:Function = instance[methodName];
-					f.apply(null,args);
-				}
-			}
-		}
+		function get registry():IRegistry;
+		function getObject(uid:String):Object;
+		function setObject(uid:String, value:Object):void;
+		// Remove dependency at Definition
+		function createObject(definition:Definition):Object;
 	}
 }

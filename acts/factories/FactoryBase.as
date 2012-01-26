@@ -24,33 +24,46 @@ package acts.factories
 {
 	import acts.factories.registry.Definition;
 	import acts.factories.registry.IRegistry;
-	import acts.factories.registry.Property;
 	
 	import flash.utils.Dictionary;
 
-	public class ObjectFactory extends FactoryBase
+	public class FactoryBase implements IFactoryBase
 	{
-		public function ObjectFactory(registry:IRegistry)
-		{
-			super(registry);
+		private var _registry:IRegistry;
+		protected var instances:Dictionary;
+		
+		public function get registry():IRegistry {
+			return _registry;
 		}
 		
-		public override function createObject(definition:Definition):Object {
-			var type:Class = definition.type;
-			var instance:Object = new type();
-			setProperties(instance,definition.properties);
+		public function FactoryBase(registry:IRegistry)
+		{
+			_registry = registry;
+			instances = new Dictionary();
+		}
+		
+		public function getObject(uid:String):Object {
+			/*if(!registry.hasDefinition(uid))
+				return null;*/
+			
+			var instance:Object = instances[uid];
+			if(!instance) {
+				var definition:Definition = registry.getDefinition(uid);
+				instance = createObject(definition);
+				if(definition.singleton) {
+					instances[definition.uid] = instance;
+				}
+			}
+			
 			return instance;
 		}
 		
-		protected function setProperties(instance:Object, properties:Array):void {
-			var len:int = properties.length;
-			var property:Property;
-			for(var i:int = 0; i < len; i++) {
-				property = properties[i];
-				if(instance.hasOwnProperty(property.name) && property.ref) {
-					instance[property.name] = getObject(property.ref);
-				}
-			}
+		public function setObject(uid:String, value:Object):void {
+			instances[uid] = value;
+		}
+		
+		public function createObject(definition:Definition):Object {
+			return null;
 		}
 	}
 }

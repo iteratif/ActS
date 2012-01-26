@@ -24,13 +24,13 @@ package acts.core
 {
 	import acts.display.IFinder;
 	import acts.display.IViewContext;
-	import acts.factories.IFactory;
+	import acts.factories.IFactoryBase;
 	import acts.factories.IFactoryContext;
 	
 	public class Context implements IContext
 	{
 		private var _finder:IFinder;
-		private var _factory:IFactory;
+		private var _factory:IFactoryBase;
 		private var _document:Object;
 
 		public function get document():Object
@@ -43,12 +43,12 @@ package acts.core
 			_document = value;
 		}
 
-		public function get factory():IFactory
+		public function get factory():IFactoryBase
 		{
 			return _factory;
 		}
 
-		public function set factory(value:IFactory):void
+		public function set factory(value:IFactoryBase):void
 		{
 			_factory = value;
 		}

@@ -1,42 +1,26 @@
 <?xml version="1.0"?>
 <componentPackage>
 	<!-- acts.core -->
-	<component id="acts.core.Action" class="acts.core.Action" />
 	<component id="Context" class="acts.core.Context" />
-	<component id="acts.core.Event" class="acts.core.Event" />
-	<component id="Expression" class="acts.core.Expression" />
-	<component id="FinalState" class="acts.core.FinalState" />
-	<component id="Operators" class="acts.core.Operators" />
-	<component id="Sequencer" class="acts.core.Sequencer" />
-	<component id="State" class="acts.core.State" />
-	<component id="acts.core.Transition" class="acts.core.Transition" />
 
 	<!-- acts.display -->
 	<component id="ASDocument" class="acts.display.ASDocument" />
 	<component id="ASFinder" class="acts.display.ASFinder" />
 
-	<!-- acts.errors -->
-	<component id="InitialNodeError" class="acts.errors.InitialNodeError" />
-
-	<!-- acts.events -->
-	<component id="StateEvent" class="acts.events.StateEvent" />
-	
 	<!-- acts.system -->
 	<component id="System" class="acts.system.System" />
-	<component id="Action" class="acts.system.Action"/>
-	<component id="Parameter" class="acts.system.Parameter"/>
 	
-	<!-- acts.process -->
-	<component id="Activity" class="acts.process.Activity" />
-	<component id="Task" class="acts.process.Task" />
-	<component id="FinalTask" class="acts.process.FinalTask" />
-	<component id="Async" class="acts.process.Async" />
-	<component id="AsyncTask" class="acts.process.AsyncTask" />
-	<component id="AsyncContext" class="acts.process.AsyncContext" />
-	<component id="acts.process.Transition" class="acts.process.Transition" />
+	<!--  acts.handlers -->
+	<component id="Action" class="acts.handlers.Action"/>
+	<component id="Actions" class="acts.handlers.Actions"/>
+	<component id="Parameter" class="acts.handlers.Parameter"/>
+	
+	<!-- acts.validations -->
+	<component id="Validation" class="acts.validations.Validation"/>
 	
 	<!-- acts.factories -->
 	<component id="Factory" class="acts.factories.Factory" />
+	<component id="FactoryBase" class="acts.factories.FactoryBase" />
 	<component id="ObjectFactory" class="acts.factories.ObjectFactory" />
 
 	<!-- acts.factories.registry -->
