@@ -17,6 +17,7 @@
 	
 	<!-- acts.validations -->
 	<component id="Validation" class="acts.validations.Validation"/>
+	<component id="Rule" class="acts.validations.Rule"/>
 	
 	<!-- acts.factories -->
 	<component id="Factory" class="acts.factories.Factory" />
