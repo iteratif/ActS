@@ -1,3 +1,25 @@
+/*
+
+The contents of this file are subject to the Mozilla Public License Version
+1.1 (the "License"); you may not use this file except in compliance with
+the License. You may obtain a copy of the License at 
+
+http://www.mozilla.org/MPL/ 
+
+Software distributed under the License is distributed on an "AS IS" basis,
+WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+for the specific language governing rights and limitations under the License. 
+
+The Original Code is Acts (Actionscript Activity).
+
+The Initial Developer of the Original Code is
+Olivier Bugalotto (aka Iteratif) <olivier.bugalotto@iteratif.net>.
+Portions created by the Initial Developer are Copyright (C) 2008-2011
+the Initial Developer. All Rights Reserved.
+
+Contributor(s) :
+
+*/
 package acts.handlers
 {
 	import acts.core.IContext;
@@ -11,13 +33,18 @@ package acts.handlers
 	import flash.display.DisplayObject;
 	import flash.events.Event;
 	import flash.utils.Dictionary;
+	
+	import org.osflash.signals.Signal;
 
 	[DefaultProperty("actions")]
-	public class Actions implements IPlugin
+	public class Actions implements IActions
 	{
 		public var actions:Array;
 		
 		protected var system:ISystem;
+		protected var preExecute:Signal;
+		protected var postExecute:Signal;
+		protected var stopped:Boolean = false;
 		
 		private var mapActions:Dictionary = new Dictionary();
 		
@@ -28,6 +55,8 @@ package acts.handlers
 		
 		public function Actions()
 		{
+			preExecute = new Signal(IActions);
+			postExecute = new Signal();
 		}
 		
 		public function start(system:ISystem):void
@@ -68,6 +97,21 @@ package acts.handlers
 				mapActions[trigger] = arr;
 			}
 			arr.push(action);
+		}
+		
+		public function postExecuting(listener:Function):void
+		{
+			postExecute.add(listener);
+		}
+		
+		public function preExecuting(listener:Function):void
+		{
+			preExecute.add(listener);
+		}
+		
+		public function stopExecution():void
+		{
+			stopped = true;
 		}
 		
 		/**
@@ -132,7 +176,12 @@ package acts.handlers
 								}
 							}
 							
-							func.apply(null,args);
+							stopped = false;
+							preExecute.dispatch(this);
+							if(!stopped) {
+								func.apply(null,args);
+								postExecute.dispatch();
+							}
 						}
 					}
 				}
@@ -166,19 +215,19 @@ package acts.handlers
 		protected function createObject(action:Action):Object {
 			var instance:Object;
 			
-			var factory:IFactory = system.mainSystem.getPlugin("acts.factories.factory") as IFactory;
+			var plugin:IFactory = system.mainSystem.getPlugin("acts.factories.factory") as IFactory;
 			
 			var source:Class = action.source;
 			if(source) {
 				instance = new source();
-			} else if(action.ref && factory) {
-				instance = factory.factory.getObject(action.ref);
+			} else if(action.ref && plugin) {
+				instance = plugin.factory.getObject(action.ref);
 			}
 			
 			if(instance is IContext) {
 				IContext(instance).finder = system.finder;
-				if(factory)
-					IContext(instance).factory = factory.factory;
+				if(plugin)
+					IContext(instance).factory = plugin.factory;
 				IContext(instance).document = system.document;
 			}
 			

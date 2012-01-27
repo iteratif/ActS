@@ -20,14 +20,16 @@ the Initial Developer. All Rights Reserved.
 Contributor(s) :
 
 */
-package acts.factories
+package acts.handlers
 {
-	import acts.factories.registry.IRegistry;
 	import acts.system.IPlugin;
 	
-	public interface IFactory extends IPlugin
+	import org.osflash.signals.Signal;
+	
+	public interface IActions extends IPlugin
 	{
-		function get registry():IRegistry;
-		function get factory():IFactoryBase;
+		function preExecuting(listener:Function):void;
+		function postExecuting(listener:Function):void;
+		function stopExecution():void;
 	}
 }

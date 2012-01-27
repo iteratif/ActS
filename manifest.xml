@@ -17,7 +17,10 @@
 	
 	<!-- acts.validations -->
 	<component id="Validation" class="acts.validations.Validation"/>
-	<component id="Rule" class="acts.validations.Rule"/>
+	<component id="NotNull" class="acts.validations.rules.NotNull"/>
+	<component id="Email" class="acts.validations.rules.Email"/>
+	<component id="Number" class="acts.validations.rules.Number"/>
+	<component id="Date" class="acts.validations.rules.Date"/>
 	
 	<!-- acts.factories -->
 	<component id="Factory" class="acts.factories.Factory" />

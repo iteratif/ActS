@@ -20,14 +20,18 @@ the Initial Developer. All Rights Reserved.
 Contributor(s) :
 
 */
-package acts.factories
+package acts.validations.rules
 {
-	import acts.factories.registry.IRegistry;
-	import acts.system.IPlugin;
+	import acts.validations.Rule;
 	
-	public interface IFactory extends IPlugin
+	import mx.core.ClassFactory;
+	import mx.validators.StringValidator;
+
+	public class NotNull extends Rule
 	{
-		function get registry():IRegistry;
-		function get factory():IFactoryBase;
+		public function NotNull()
+		{
+			itemValidator = new ClassFactory(StringValidator);
+		}
 	}
 }

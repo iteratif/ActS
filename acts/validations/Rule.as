@@ -1,8 +1,31 @@
+/*
+
+The contents of this file are subject to the Mozilla Public License Version
+1.1 (the "License"); you may not use this file except in compliance with
+the License. You may obtain a copy of the License at 
+
+http://www.mozilla.org/MPL/ 
+
+Software distributed under the License is distributed on an "AS IS" basis,
+WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+for the specific language governing rights and limitations under the License. 
+
+The Original Code is Acts (Actionscript Activity).
+
+The Initial Developer of the Original Code is
+Olivier Bugalotto (aka Iteratif) <olivier.bugalotto@iteratif.net>.
+Portions created by the Initial Developer are Copyright (C) 2008-2011
+the Initial Developer. All Rights Reserved.
+
+Contributor(s) :
+
+*/
 package acts.validations {
 	import acts.display.IFinder;
 	
 	import flash.display.DisplayObject;
 	
+	import mx.core.ClassFactory;
 	import mx.core.UIComponent;
 	import mx.events.ValidationResultEvent;
 	import mx.validators.EmailValidator;
@@ -10,65 +33,26 @@ package acts.validations {
 	import mx.validators.Validator;
 
 	public class Rule {
-		public static const NOT_NULL:String = "notNull";
-		public static const NULL:String = "null";
-		public static const EMAIL:String = "email";
-		public static const CUSTOM:String = "custom";
-		public static const TRUE:String = "true";
-		public static const FALSE:String = "false";
-		public static const DATE:String = "date";
-		public static const NUMBER:String = "number";
-		public static const CURRENCY:String = "currency";
-		
 		public var source:String;
 		public var property:String;
-		
-		[Inspectable(enumeration="custom,email,notNull,null,true,false,date,number,currency")]
-		public var type:String;
-		
 		public var required:Boolean = true;
-		public var errorProperty:String = "errorString";
+		//public var errorProperty:String = "errorString";
 		
-		protected var validators:Object = {"notNull": StringValidator,
-										   "email": EmailValidator};
+		protected var itemValidator:ClassFactory;
 		
 		public function Rule() {
-			
+			property = "text";
 		}
 		
-		public function apply(finder:IFinder):Boolean {
-			var isValid:Boolean = true;
-			var item:UIComponent;
-			var result:ValidationResultEvent;
-			var validated:Boolean;
+		public function apply(finder:IFinder):void {
 			var items:Array = finder.getElements(source);
 			var len:int = items.length;
-			var i:int;
-			var validator:Validator;
-			
-			for(i = 0; i < len; i++) {
-				item = items[i];
-				item[errorProperty] = "";
-				validator = createValidator(type);
-				result = validator.validate(item[property]);
-				validated = (result.type == ValidationResultEvent.VALID);
-				if(!validated)
-					item[errorProperty] = result.message;
-				
-				isValid &&= validated;
+			for(var i:int = 0; i < len; i++) {
+				var validator:Validator = itemValidator.newInstance();
+				validator.source = items[i];
+				validator.property = property;
+				validator.required = required;
 			}
-				
-			return isValid;
-		}
-		
-		public function createValidator(type:String):Validator {
-			var validator:Validator;
-			var cls:Class = validators[type];
-			if(cls) {
-				validator = new cls();
-			}
-			
-			return validator;
 		}
 	}
 }
