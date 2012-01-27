@@ -55,7 +55,7 @@ package acts.handlers
 		
 		public function Actions()
 		{
-			preExecute = new Signal(IActions);
+			preExecute = new Signal(String,DisplayObject,IActions);
 			postExecute = new Signal();
 		}
 		
@@ -177,7 +177,7 @@ package acts.handlers
 							}
 							
 							stopped = false;
-							preExecute.dispatch(this);
+							preExecute.dispatch(e.type,displayObject,this);
 							if(!stopped) {
 								func.apply(null,args);
 								postExecute.dispatch();

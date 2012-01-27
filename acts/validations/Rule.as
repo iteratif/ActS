@@ -40,19 +40,23 @@ package acts.validations {
 		
 		protected var itemValidator:ClassFactory;
 		
-		public function Rule() {
-			property = "text";
+		private var _validators:Array;
+		
+		public function get validators():Array {
+			return _validators;
 		}
 		
-		public function apply(finder:IFinder):void {
-			var items:Array = finder.getElements(source);
-			var len:int = items.length;
-			for(var i:int = 0; i < len; i++) {
-				var validator:Validator = itemValidator.newInstance();
-				validator.source = items[i];
-				validator.property = property;
-				validator.required = required;
-			}
+		public function Rule() {
+			property = "text";
+			_validators = [];
+		}
+		
+		public function apply(source:Object):void {
+			var validator:Validator = itemValidator.newInstance();
+			validator.source = source;
+			validator.property = property;
+			validator.required = required;
+			_validators.push(validator);
 		}
 	}
 }

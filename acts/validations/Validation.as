@@ -20,9 +20,9 @@ the Initial Developer. All Rights Reserved.
 Contributor(s) :
 
 */
-package acts.validations
-{
+package acts.validations {
 	import acts.display.utils.ContextualSelector;
+	import acts.handlers.IActions;
 	import acts.system.IPlugin;
 	import acts.system.ISystem;
 	import acts.utils.ClassUtil;
@@ -40,27 +40,30 @@ package acts.validations
 	import spark.validators.NumberValidator;
 	
 	[DefaultProperty("rules")]
-	public class Validation implements IPlugin
-	{
+	public class Validation implements IPlugin {
 		public var rules:Array;
-		protected var system:ISystem;
+		public var trigger:String;
+		public var event:String;
 		
+		protected var system:ISystem;
 		protected var mapRules:Object;
 		
-		public function get name():String
-		{
+		public function get name():String {
 			return "acts.validations.validation";
 		}
 		
-		public function Validation()
-		{
+		public function Validation() {
 			mapRules = {};
 		}
 		
-		public function start(system:ISystem):void
-		{
+		public function start(system:ISystem):void {
 			this.system = system;
 			this.system.asDocument.elementAdded.add(elementAdded);
+			
+			if(trigger != null) {
+				var plugin:IActions = system.getPlugin("acts.handlers.actions") as IActions;
+				plugin.preExecuting(preExecuting);
+			}
 			
 			var len:int = rules.length;
 			for(var i:int = 0; i < len; i++) {
@@ -82,7 +85,7 @@ package acts.validations
 				}
 				arr.push(rule);
 			} else if(source is DisplayObject) {
-				apply(rule);
+				rule.apply(source);
 			}
 		}
 		
@@ -97,17 +100,31 @@ package acts.validations
 			return rules;
 		}
 		
-		protected function apply(rule:Rule):void {
-			rule.apply(system.finder);
-		}
-		
 		private function elementAdded(displayObject:DisplayObject):void {
+			var rule:Rule;
 			var rules:Array = getRules(displayObject);
 			var len:int = rules.length;
 			for(var i:int = 0; i < len; i++) {
-				apply(rules[i]);
+				rule = rules[i];
+				rule.apply(displayObject);
 			}
 		}
 		
+		private function preExecuting(type:String, displayObject:DisplayObject, plugin:IActions):void {
+			var item:Object = system.finder.getElement(trigger);
+			if(type == event && item == displayObject) {
+				var rule:Rule;
+				var validators:Array = [];
+				var len:int = rules.length;
+				for(var i:int = 0; i < len; i++) {
+					rule = rules[i];
+					validators = validators.concat(rule.validators);
+				}
+				
+				var results:Array = Validator.validateAll(validators);
+				if(results.length > 0)
+					plugin.stopExecution();
+			}
+		}
 	}
 }
