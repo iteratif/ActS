@@ -43,10 +43,12 @@ package acts.system
 	 * 
 	 * <pre>
 	 * 		&lt;s:Declarations&gt;
-	 * 			&lt;System&gt;
-	 * 				&lt;Action trigger="#btn" event="click" source="managers.AppManager" method="execute" /&gt;
-	 * 				&lt;Action trigger="#txt" event="enter" source="managers.AppManager" method="search" /&gt;
-	 * 			&lt;/System&gt;
+	 * 			&lt;acts:System&gt;
+	 * 				&lt;acts:Actions&gt;
+	 * 					&lt;acts:Action trigger="#btn" event="click" source="managers.AppManager" method="execute" /&gt;
+	 * 					&lt;acts:Action trigger="#txt" event="enter" source="managers.AppManager" method="search" /&gt;
+	 * 				&lt;/acts:Actions&gt;
+	 * 			&lt;/acts:System&gt;
 	 * 		&lt;/s:Declarations&gt;
 	 * </pre>
 	 * 

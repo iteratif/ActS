@@ -56,7 +56,12 @@ package acts.validations {
 			validator.source = source;
 			validator.property = property;
 			validator.required = required;
+			initialize(validator);
 			_validators.push(validator);
+		}
+		
+		protected function initialize(validator:Validator):void {
+			
 		}
 	}
 }

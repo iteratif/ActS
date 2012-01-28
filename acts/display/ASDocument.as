@@ -128,20 +128,24 @@ package acts.display
 		
 		protected function addBehaviors(dispatcher:DisplayObject):void {
 			dispatcher.addEventListener(Event.ADDED,addedHandler);
-			// dispatcher.addEventListener(Event.REMOVED,removedHandler);
 		}
 		
 		protected function addedHandler(e:Event):void {
-			if(e.target != container)
+			if(e.target != container) {
 				e.stopImmediatePropagation();
-			insertElement(e.target);
+				e.target.addEventListener(Event.ADDED_TO_STAGE,addedFromStageHandler,false,0,true);
+			}
+		}
+		
+		protected function addedFromStageHandler(e:Event):void {
+			insertElement(e.target);		
 		}
 		
 		protected function insertElement(elt:Object):void {
 			var className:String = ClassUtil.unqualifiedClassName(elt);
 			
 			// trace("insert",elt,container);
-			elt.addEventListener(Event.REMOVED_FROM_STAGE,removedHandler);
+			elt.addEventListener(Event.REMOVED_FROM_STAGE,removedHandler,false,0,true);
 			
 			var types:Array = typedElements[className];
 			if(!types) {
@@ -166,10 +170,7 @@ package acts.display
 			var elt:Object = e.target;
 			var className:String = ClassUtil.unqualifiedClassName(elt);
 			
-			//trace("remove",elt,container);
-			if(elt.hasEventListener(Event.REMOVED_FROM_STAGE)) {
-				elt.removeEventListener(Event.REMOVED_FROM_STAGE,removedHandler);
-			}
+			// trace("remove",elt.name,container);
 			
 			var len:int, i:int;
 			var types:Array = typedElements[className];
