@@ -53,6 +53,10 @@ package acts.factories
 				if(definition.singleton) {
 					instances[definition.uid] = instance;
 				}
+				
+				if(definition.initMethod) {
+					instance[definition.initMethod]();
+				}
 			}
 			
 			return instance;

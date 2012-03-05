@@ -29,6 +29,7 @@ package acts.factories.registry
 		public var type:Class;
 		public var singleton:Boolean;
 		public var properties:Array;
+		public var initMethod:String;
 		
 		public function Definition(uid:String = null, type:Class = null, singleton:Boolean = true)
 		{
