@@ -22,7 +22,9 @@ Contributor(s) :
 */
 package acts.handlers
 {
+	import acts.core.BaseContext;
 	import acts.core.IContext;
+	import acts.core.acts_internal;
 	import acts.display.utils.ContextualSelector;
 	import acts.factories.IFactory;
 	import acts.system.ASSystem;
@@ -32,13 +34,21 @@ package acts.handlers
 	
 	import flash.display.DisplayObject;
 	import flash.events.Event;
+	import flash.events.IEventDispatcher;
 	import flash.utils.Dictionary;
+	import flash.utils.getTimer;
+	
+	import mx.states.State;
 	
 	import org.osflash.signals.Signal;
+	
+	use namespace acts_internal;
 
 	[DefaultProperty("actions")]
 	public class Actions implements IActions
 	{
+		public static const ACTIONS_PLUGIN_ID:String = "acts.handlers.actions";
+		
 		public var actions:Array;
 		
 		protected var system:ISystem;
@@ -48,15 +58,18 @@ package acts.handlers
 		
 		private var mapActions:Dictionary = new Dictionary();
 		
+		private var states:Array;
+		
 		public function get name():String
 		{
-			return "acts.handlers.actions";
+			return ACTIONS_PLUGIN_ID;
 		}
 		
 		public function Actions()
 		{
-			preExecute = new Signal(String,DisplayObject,IActions);
+			preExecute = new Signal(String,Object,IActions);
 			postExecute = new Signal();
+			states = [];
 		}
 		
 		public function start(system:ISystem):void
@@ -64,14 +77,31 @@ package acts.handlers
 			this.system = system;
 			this.system.asDocument.elementAdded.add(elementAddedHandler);
 			
+			addActions(actions);
+		}
+		
+		public function addActions(actions:Array, document:Object = null):void {
+			var doc:Object = this.system.document;
+			if(document)
+				doc = document;
+			
+			doc.addEventListener("preinitialize",initializeStates);
+			
 			var i:int, len:int;
 			if(actions) {
 				len = actions.length;
 				var action:acts.handlers.Action;
 				for(i = 0; i < len; i++) {
 					action = actions[i];
+					
+					if(action.state) {
+						states.push(action);
+						continue;
+					}
+					
 					if(!action.trigger)
-						action.trigger = system.document;
+						action.trigger = doc;
+					
 					addAction(action);
 				}
 			}
@@ -87,8 +117,8 @@ package acts.handlers
 			if(trigger is String) {
 				var expr:ContextualSelector = system.finder.parsePattern(trigger.toString());
 				trigger = (expr.name != null) ? expr.name : expr.type;
-			} else if(trigger is DisplayObject) {
-				DisplayObject(trigger).addEventListener(action.event,firedEventHandler);	
+			} else if(trigger is IEventDispatcher) {
+				IEventDispatcher(trigger).addEventListener(action.event,firedEventHandler);	
 			}
 			
 			var arr:Array = mapActions[trigger];
@@ -124,10 +154,9 @@ package acts.handlers
 			
 			if(actions) {
 				var action:Action;
-				var len:int = actions.length;
 				var selector:ContextualSelector;
 				var matched:Boolean = true;
-				for(var i:int = 0; i < len; i++) {
+				for(var i:int = actions.length - 1; i >= 0; --i) {
 					action = actions[i];
 					if(action.trigger is String) { 
 						selector = system.finder.parsePattern(action.trigger.toString());
@@ -147,13 +176,11 @@ package acts.handlers
 		 * 
 		 */
 		protected function firedEventHandler(e:Event):void {
-			var displayObject:DisplayObject = e.currentTarget as DisplayObject;
-			var actions:Array = getActions(displayObject);
+			var actions:Array = getActions(e.currentTarget);
 			if(actions) {
 				var action:Action;
 				var instance:Object;
-				var len:int = actions.length;
-				for(var i:int = 0; i < len; i++) {
+				for(var i:int = actions.length - 1; i >= 0; --i) {
 					action = actions[i];
 					if(action.event == e.type) {
 						instance = createObject(action);
@@ -168,8 +195,7 @@ package acts.handlers
 							if(action.parameters != null) {
 								var value:Object;
 								var parameter:Parameter;
-								len = action.parameters.length;
-								for(i = 0; i < len; i++) {
+								for(i = action.parameters.length - 1; i >= 0; --i) {
 									parameter = action.parameters[i];
 									value = getParameterValue(parameter);
 									args.push(value);
@@ -177,7 +203,7 @@ package acts.handlers
 							}
 							
 							stopped = false;
-							preExecute.dispatch(e.type,displayObject,this);
+							preExecute.dispatch(e.type,e.currentTarget,this);
 							if(!stopped) {
 								func.apply(null,args);
 								postExecute.dispatch();
@@ -193,15 +219,15 @@ package acts.handlers
 		 * @private
 		 * 
 		 */
-		protected function getActions(displayObject:DisplayObject):Array {
+		protected function getActions(value:Object):Array {
 		
-			var actions:Array = mapActions[displayObject];
+			var actions:Array = mapActions[value];
 			if(!actions) {
-				actions = mapActions[displayObject.name];
+				actions = mapActions[value.name];
 			}
 			
 			if(!actions) {
-				var type:String = ClassUtil.unqualifiedClassName(displayObject);
+				var type:String = ClassUtil.unqualifiedClassName(value);
 				actions = mapActions[type];
 			}
 			return actions;
@@ -224,11 +250,9 @@ package acts.handlers
 				instance = plugin.factory.getObject(action.ref);
 			}
 			
-			if(instance is IContext) {
-				IContext(instance).finder = system.finder;
-				if(plugin)
-					IContext(instance).factory = plugin.factory;
-				IContext(instance).document = system.document;
+			if(instance is BaseContext) {
+				BaseContext(instance).systemContext = system.mainSystem;
+				BaseContext(instance).initialize();
 			}
 			
 			return instance;
@@ -246,6 +270,24 @@ package acts.handlers
 			}
 			
 			return null;
+		}
+		
+		private function getState(stateName:String):State {
+			var states:Array = system.document.states;
+			for(var i:int = states.length - 1; i >= 0; --i) {
+				if(states[i].name == stateName)
+					return states[i];
+			}
+			
+			return null;
+		}
+		
+		private function initializeStates(e:Event):void {
+			for(var i:int = states.length - 1; i >= 0; --i) {
+				states[i].trigger = getState(states[i].state);
+				
+				addAction(states[i]);
+			}
 		}
 	}
 }

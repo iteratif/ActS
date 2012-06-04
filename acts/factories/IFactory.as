@@ -28,6 +28,6 @@ package acts.factories
 	public interface IFactory extends IPlugin
 	{
 		function get registry():IRegistry;
-		function get factory():IFactoryBase;
+		function get factory():IBaseFactory;
 	}
 }

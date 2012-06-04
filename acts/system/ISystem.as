@@ -32,5 +32,6 @@ package acts.system
 		function get mainSystem():ISystem;
 		function get finder():IFinder;
 		function getPlugin(name:String):IPlugin;
+		function registryAndStart(plugin:IPlugin):void;
 	}
 }

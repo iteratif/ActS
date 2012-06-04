@@ -33,6 +33,9 @@ package acts.display
 	import flash.utils.Dictionary;
 	import flash.utils.getQualifiedClassName;
 	
+	import mx.core.IContainer;
+	import mx.core.IVisualElementContainer;
+	
 	import org.osflash.signals.Signal;
 	
 	public class ASDocument extends EventDispatcher
@@ -60,7 +63,6 @@ package acts.display
 			namedElements = new Dictionary();
 			
 			addBehaviors(this.container);
-			getChildren();
 		}
 		
 		public function getElementsByType(typeName:String):Array {
@@ -115,30 +117,23 @@ package acts.display
 			return count == selectors.length;
 		}
 		
-		public function getChildren():void {
-			var container:DisplayObjectContainer = container as DisplayObjectContainer;
-			
-			if(container != null) {
-				var len:int = container.numChildren;
-				for(var i:int = 0; i < len; i++) {
-					insertElement(container.getChildAt(i));
-				}
-			}
-		}
-		
 		protected function addBehaviors(dispatcher:DisplayObject):void {
 			dispatcher.addEventListener(Event.ADDED,addedHandler,true);
 		}
 		
-		protected function addedHandler(e:Event):void {
-			insertElement(e.target);		
+		protected function addedHandler(e:Object):void {
+			insertElement(e.target);
 		}
 		
 		protected function insertElement(elt:Object):void {
 			var className:String = ClassUtil.unqualifiedClassName(elt);
 			
-			// trace("insert",elt,container);
-			elt.addEventListener(Event.REMOVED_FROM_STAGE,removedHandler,false,0,true);
+			//trace("insert",elt,container);
+			if(!elt.hasEventListener(Event.ADDED_TO_STAGE))
+				elt.addEventListener(Event.ADDED_TO_STAGE,addedHandler,false,0,true);
+			
+			if(!elt.hasEventListener(Event.REMOVED_FROM_STAGE))
+				elt.addEventListener(Event.REMOVED_FROM_STAGE,removedHandler,false,0,true);
 			
 			var types:Array = typedElements[className];
 			if(!types) {
@@ -163,7 +158,7 @@ package acts.display
 			var elt:Object = e.target;
 			var className:String = ClassUtil.unqualifiedClassName(elt);
 			
-			//trace("remove",elt.name,container);
+			// trace("remove",elt.name,container);
 			
 			var len:int, i:int;
 			var types:Array = typedElements[className];

@@ -25,12 +25,10 @@ package acts.factories
 	import acts.factories.registry.Definition;
 	import acts.factories.registry.IRegistry;
 
-	public interface IFactoryBase
+	public interface IBaseFactory
 	{
 		function get registry():IRegistry;
 		function getObject(uid:String):Object;
 		function setObject(uid:String, value:Object):void;
-		// Remove dependency at Definition
-		function createObject(definition:Definition):Object;
 	}
 }

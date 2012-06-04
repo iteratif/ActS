@@ -39,6 +39,11 @@ package acts.handlers
 		 * @see acts.display.ASFinder
 		 */
 		public var trigger:Object;
+		
+		/**
+		 * The state name. 
+		 */
+		public var state:String;
 		/**
 		 * The reference of actions class.
 		 */

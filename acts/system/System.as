@@ -24,7 +24,9 @@ package acts.system
 {
 	import acts.display.ASDocument;
 	import acts.display.ASFinder;
-	import acts.factories.IFactoryBase;
+	import acts.factories.Factory;
+	import acts.factories.IBaseFactory;
+	import acts.persistence.Persistence;
 	
 	import flash.display.DisplayObjectContainer;
 	
@@ -55,17 +57,7 @@ package acts.system
 	 * @see acts.system.Action
 	 */
 	public class System extends ASSystem implements IMXMLObject
-	{	
-		/**
-		 * The array of definition objects for the objects factory.
-		 */
-		public var objects:Array;
-		
-		/**
-		 * The array of actions for this system.
-		 */
-		public var actions:Array;
-		
+	{			
 		[ArrayElementType("acts.system.IPlugin")]
 		public var plugins:Array;
 		/**
@@ -98,6 +90,14 @@ package acts.system
 				for(i = 0; i < len; i++) {
 					registryAndStart(plugins[i]);
 				}
+			}
+			
+			if(!getPlugin("acts.factories.factory")) {
+				registryAndStart(new Factory());
+			}
+			
+			if(!getPlugin("acts.persistence.Persistence")) {
+				registryAndStart(new Persistence());
 			}
 		}
 	}

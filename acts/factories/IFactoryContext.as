@@ -24,7 +24,7 @@ package acts.factories
 {
 	public interface IFactoryContext
 	{
-		function get factory():IFactoryBase;
-		function set factory(value:IFactoryBase):void;
+		function get factory():IBaseFactory;
+		function set factory(value:IBaseFactory):void;
 	}
 }

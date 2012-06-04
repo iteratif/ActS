@@ -31,34 +31,41 @@ package acts.factories
 	[DefaultProperty("definitions")]
 	public class Factory implements IFactory
 	{
+		public static const FACTORY_PLUGIN_ID:String = "acts.factories.factory";
+		
 		public var definitions:Array;
 		
-		protected var system:ISystem;
+		protected var _system:ISystem;
 		protected var _registry:IRegistry;
-		protected var _factory:IFactoryBase;
+		protected var _factory:IBaseFactory;
 		
 		public function get name():String
 		{
-			return "acts.factories.factory";
+			return FACTORY_PLUGIN_ID;
 		}
 		
 		public function get registry():IRegistry {
 			return _registry;
 		}
 		
-		public function get factory():IFactoryBase {
+		public function get factory():IBaseFactory {
 			return _factory;
 		}
 
-		public function Factory()
+		public function Factory(factory:IBaseFactory = null)
 		{
-			_registry = new Registry();
-			_factory = new ObjectFactory(_registry);
+			_factory = factory;
+			if(!_factory) {
+				_factory = ObjectFactory;
+				_registry = ObjectFactory.registry;
+			} else {
+				_registry = _factory.registry;
+			}
 		}
 		
 		public function start(system:ISystem):void
 		{
-			this.system = system;
+			_system = system;
 			
 			if(definitions != null) {
 				var len:int = definitions.length;
@@ -73,7 +80,7 @@ package acts.factories
 		 * 
 		 */
 		public function addDefinition(definition:Definition):void {
-			var factory:IFactory = system.mainSystem.getPlugin("acts.factories.factory") as IFactory; 
+			var factory:IFactory = _system.mainSystem.getPlugin(FACTORY_PLUGIN_ID) as IFactory; 
 			factory.registry.addDefinition(definition);
 		}
 	}

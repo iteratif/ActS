@@ -22,10 +22,14 @@
 	<component id="Number" class="acts.validations.rules.Number"/>
 	<component id="Date" class="acts.validations.rules.Date"/>
 	
+	<!-- acts.persistence -->
+	<component id="Persistence" class="acts.persistence.Persistence" />
+	<component id="PersistenceUnit" class="acts.persistence.PersistenceUnit" />
+	
 	<!-- acts.factories -->
 	<component id="Factory" class="acts.factories.Factory" />
-	<component id="FactoryBase" class="acts.factories.FactoryBase" />
 	<component id="ObjectFactory" class="acts.factories.ObjectFactory" />
+	<component id="PersistenceFactory" class="acts.factories.PersistenceFactory" />
 
 	<!-- acts.factories.registry -->
 	<component id="Registry" class="acts.factories.registry.Registry"/>

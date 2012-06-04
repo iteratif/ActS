@@ -24,67 +24,76 @@ package acts.core
 {
 	import acts.display.IFinder;
 	import acts.display.IViewContext;
-	import acts.factories.IFactoryBase;
+	import acts.factories.IBaseFactory;
+	import acts.factories.IFactory;
 	import acts.factories.IFactoryContext;
+	import acts.persistence.IPersistence;
+	import acts.system.ISystem;
 	
-	public class Context implements IContext
+	use namespace acts_internal;
+	
+	public class Context extends BaseContext
 	{
-		private var _finder:IFinder;
-		private var _factory:IFactoryBase;
-		private var _document:Object;
+		private var _factory:IBaseFactory;
+		private var _pFactory:IBaseFactory;
+		private var _persistence:IPersistence;
 
 		public function get document():Object
 		{
-			return _document;
+			return systemContext.document;
 		}
-
-		public function set document(value:Object):void
-		{
-			_document = value;
-		}
-
-		public function get factory():IFactoryBase
-		{
-			return _factory;
-		}
-
-		public function set factory(value:IFactoryBase):void
-		{
-			_factory = value;
-		}
-
 		
 		public function get finder():IFinder
 		{
-			return _finder;
+			return systemContext.finder;
 		}
 		
-		public function set finder(value:IFinder):void
-		{
-			if(value != _finder) {
-				_finder = value;
+		public function get persistence():IPersistence {
+			if(!_persistence) {
+				_persistence = systemContext.getPlugin("acts.persistence.Persistence") as IPersistence;
 			}
+			return _persistence;
+		}
+		
+		public function Context():void {
+			
 		}
 		
 		public function find(selector:String):Object {
 			if (selector.charAt(0)=="*") {
-				return _finder.getElements(selector.substring(1));
+				return systemContext.finder.getElements(selector.substring(1));
 			} else if (selector.charAt(0)=="+") {
 				return _factory.getObject(selector.substring(1));
 			} else {
-				return _finder.getElement(selector);
+				return systemContext.finder.getElement(selector);
 			}
 		}
 		
 		public function finds(selector:String):Array {
-			return _finder.getElements(selector);
+			return systemContext.finder.getElements(selector);
+		}
+		
+		public function getEntity(uid:String):Object {
+			if(!_pFactory) {
+				var plugin:IPersistence = systemContext.getPlugin("acts.persistence.Persistence") as IPersistence;
+				_pFactory = plugin.factory;
+			}
+			return _pFactory.getObject(uid);
 		}
 		
 		public function getObject(uid:String):Object {
+			if(!_factory) {
+				var plugin:IFactory = systemContext.getPlugin("acts.factories.factory") as IFactory;
+				_factory = plugin.factory;
+			}
 			return _factory.getObject(uid);
 		}
 	
 		public function setObject(uid:String, value:Object):void {
+			if(!_factory) {
+				var plugin:IFactory = systemContext.getPlugin("acts.factories.factory") as IFactory;
+				_factory = plugin.factory;
+			}
 			return _factory.setObject(uid,value);
 		}
 	}

@@ -24,11 +24,22 @@ package acts.validations.rules
 {
 	import acts.validations.Rule;
 	
+	import mx.core.ClassFactory;
+	import mx.validators.DateValidator;
+	import mx.validators.Validator;
+	
 	public class Date extends Rule
 	{
+		public var format:String = "DD/MM/YYYY";
+		
 		public function Date()
 		{
-			super();
+			itemValidator = new ClassFactory(DateValidator);
+		}
+		
+		protected override function initialize(validator:Validator):void {
+			var v:DateValidator = validator as DateValidator;
+			v.inputFormat = format;
 		}
 	}
 }

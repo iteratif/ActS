@@ -41,6 +41,8 @@ package acts.validations {
 	
 	[DefaultProperty("rules")]
 	public class Validation implements IPlugin {
+		public static const VALIDATION_PLUGIN_ID:String = "acts.validations.validation";
+		
 		public var rules:Array;
 		public var trigger:String;
 		public var event:String;
@@ -49,7 +51,7 @@ package acts.validations {
 		protected var mapRules:Object;
 		
 		public function get name():String {
-			return "acts.validations.validation";
+			return VALIDATION_PLUGIN_ID;
 		}
 		
 		public function Validation() {
@@ -61,7 +63,7 @@ package acts.validations {
 			this.system.asDocument.elementAdded.add(elementAdded);
 			
 			if(trigger != null) {
-				var plugin:IActions = system.getPlugin("acts.handlers.actions") as IActions;
+				var plugin:IActions = system.mainSystem.getPlugin("acts.handlers.actions") as IActions;
 				plugin.preExecuting(preExecuting);
 			}
 			
@@ -110,9 +112,9 @@ package acts.validations {
 			}
 		}
 		
-		private function preExecuting(type:String, displayObject:DisplayObject, plugin:IActions):void {
+		private function preExecuting(type:String, o:Object, plugin:IActions):void {
 			var item:Object = system.finder.getElement(trigger);
-			if(type == event && item == displayObject) {
+			if(type == event && item == o) {
 				var rule:Rule;
 				var validators:Array = [];
 				var len:int = rules.length;

@@ -25,12 +25,10 @@ package acts.core
 	import acts.display.IViewContext;
 	import acts.factories.IFactoryContext;
 	import acts.system.ASSystem;
+	import acts.system.ISystem;
 	
-	public interface IContext extends IFactoryContext, IViewContext
+	public interface IContext
 	{
-		function find(selector:String):Object;
-		function finds(selector:String):Array;
-		function getObject(uid:String):Object;
-		function setObject(uid:String, value:Object):void;
+		
 	}
 }
